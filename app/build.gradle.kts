@@ -53,7 +53,7 @@ dependencies {
     implementation (libs.logging.interceptor)
     // Room (Local Database)
     implementation (libs.androidx.room.runtime)
-    kapt (libs.androidx.room.compiler)
+    kapt(libs.androidx.hilt.compiler)
     implementation (libs.androidx.room.ktx)
     // Coroutines & Flow
     implementation (libs.kotlinx.coroutines.core)
