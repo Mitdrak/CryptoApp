@@ -1,0 +1,20 @@
+package com.example.cryptoapp.ui.navigation
+
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import com.example.cryptoapp.ui.screen.home.HomeScreen
+
+fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
+    navigation(
+        route = NavigationRoutes.Authenticated.NavigationRoute.route,
+        startDestination = NavigationRoutes.Authenticated.Home.route
+    ) {
+        //Menu
+        composable(route = NavigationRoutes.Authenticated.Home.route) {
+            HomeScreen(navController = navController)
+        }
+    }
+
+}

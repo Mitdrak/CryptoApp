@@ -7,10 +7,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.example.cryptoapp.ui.navigation.NavigationRoutes
+import com.example.cryptoapp.ui.navigation.authenticatedGraph
 import com.example.cryptoapp.ui.theme.CryptoAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,11 +28,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CryptoAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface {
+                    MainApp()
                 }
             }
         }
@@ -34,17 +37,19 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MainApp() {
+    MainNavHost()
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    CryptoAppTheme {
-        Greeting("Android")
+fun MainNavHost(
+    modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(),
+) {
+    NavHost(
+        modifier = modifier,
+        navController = navController,
+        startDestination = NavigationRoutes.Authenticated.NavigationRoute.route
+    ) {
+        authenticatedGraph(navController = navController)
     }
 }
