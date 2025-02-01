@@ -51,6 +51,9 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor)
+    // OkHttp (for WebSocket)
+    implementation (libs.okhttp3.okhttp)
+    implementation (libs.logging.interceptor.v4120)
     // Room (Local Database)
     implementation (libs.androidx.room.runtime)
     kapt(libs.androidx.hilt.compiler)
@@ -59,6 +62,9 @@ dependencies {
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.androidx.lifecycle.runtime.ktx.v262)
+    //Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
