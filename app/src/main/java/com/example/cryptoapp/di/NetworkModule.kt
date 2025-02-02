@@ -17,9 +17,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-        return Retrofit.Builder().baseUrl("https://api.coingecko.com/api/v3/")
+        return Retrofit.Builder().baseUrl("https://whitebit.com/api/v4/")
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
+
 
     @Provides
     @Singleton

@@ -5,10 +5,14 @@ import com.example.cryptoapp.data.model.dto.SocketRequest
 import com.example.cryptoapp.data.model.dto.SocketResponse
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -32,20 +36,21 @@ class WebSocketClient @Inject constructor(
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.d(
-                    "WebSocket",
-                    "Connected"
+                    "WebSocket", "Connected"
                 )/*webSocket.send(initMessage) // ✅ Send init message*/
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                try {
-                    val message = Gson().fromJson(text, SocketResponse::class.java)
-                    if (message.id == null) {
-                        _messageFlow.value = message // ✅ Emit message to Flow
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val message = Gson().fromJson(text, SocketResponse::class.java)
+                        if (message.id == null) {
+                            _messageFlow.value = message // ✅ Emit message to Flow
+                        }
+                        Log.d("WebSocket", "Received: $message")
+                    } catch (e: Exception) {
+                        Log.e("WebSocket", "Error parsing message: ${e.message}")
                     }
-                    Log.d("WebSocket", "Received: $message")
-                } catch (e: Exception) {
-                    Log.e("WebSocket", "Error parsing message: ${e.message}")
                 }
             }
 

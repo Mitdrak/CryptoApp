@@ -9,6 +9,7 @@ import com.example.cryptoapp.data.model.dto.SocketResponse
 import com.example.cryptoapp.data.repository.WebSocketRepository
 import com.example.cryptoapp.util.cryptoAssets
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,9 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: WebSocketRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val repository: WebSocketRepository
+) : ViewModel() {
     private val _name = MutableStateFlow("")
     val name: StateFlow<String> = _name
     private val _surname = MutableStateFlow("")
@@ -35,16 +38,25 @@ class HomeViewModel @Inject constructor(private val repository: WebSocketReposit
         connectWebSocket()
     }
 
+
     private fun loadCryptoAssets() {
         _cryptoAsssetsData.value = cryptoAssets
     }
 
     private fun collectMessages() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.messages.collectLatest { message ->
                 message.let {
                     println("New message received: $it")
-                    _messages.value += it
+                    if (it != null) {
+                        _cryptoAsssetsData.value = _cryptoAsssetsData.value.map { cryptoAsset ->
+                            if (it.params[0] == cryptoAsset.symbol+"_USDT") {
+                                cryptoAsset.copy(price = it.params[1].toDouble())
+                            } else {
+                                cryptoAsset
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -58,8 +70,7 @@ class HomeViewModel @Inject constructor(private val repository: WebSocketReposit
         _surname.value = newString
     }
 
-    fun connectWebSocket() {
-        /*repository.startWebSocket("wss://api.whitebit.com/ws")*/
+    fun connectWebSocket() {/*repository.startWebSocket("wss://api.whitebit.com/ws")*/
         repository.startWebSocket()
     }
 
@@ -69,20 +80,12 @@ class HomeViewModel @Inject constructor(private val repository: WebSocketReposit
 
     fun sendMessage() {
         repository.sendMessage(
-            SocketRequest(
-                id = 3,
+            SocketRequest(id = 3,
                 method = "lastprice_subscribe",
-                params = listOf(
-                    "BTC_USDT",
-                    "ETH_USDT",
-                    "SOL_USDT",
-                    "DOGE_USDT",
-                    "ADA_USDT",
-                    "1INCH_USDT",
-                    "AAVE_USDT",
-
-                )
-            )
+                params = _cryptoAsssetsData.value.map {
+                    it.symbol + "_USDT"
+                })
         )
+
     }
 }
