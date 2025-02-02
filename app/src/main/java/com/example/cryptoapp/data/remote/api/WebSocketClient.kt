@@ -38,6 +38,7 @@ class WebSocketClient @Inject constructor(
                 Log.d(
                     "WebSocket", "Connected"
                 )/*webSocket.send(initMessage) // ✅ Send init message*/
+                println("Init message: $initMessage")
                 sendMessage(initMessage) // Send initial message after connection
 
             }

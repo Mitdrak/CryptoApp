@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization)
     alias(libs.plugins.hilt.android) // Apply the Hilt plugin
+    id("com.google.devtools.ksp")
     id("kotlin-kapt") // Required for Hilt
 }
 
@@ -57,6 +58,7 @@ dependencies {
     // Room (Local Database)
     implementation (libs.androidx.room.runtime)
     kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation (libs.androidx.room.ktx)
     // Coroutines & Flow
     implementation (libs.kotlinx.coroutines.core)
