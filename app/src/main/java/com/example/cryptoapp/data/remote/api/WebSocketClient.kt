@@ -31,13 +31,15 @@ class WebSocketClient @Inject constructor(
     private val _messageFlow = MutableStateFlow<SocketResponse?>(null)// ✅ List instead of
     val messageFlow: StateFlow<SocketResponse?> = _messageFlow.asStateFlow()
 
-    fun connectWebSocket(url: String, initMessage: String) {
+    fun connectWebSocket(url: String, initMessage: SocketRequest) {
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.d(
                     "WebSocket", "Connected"
                 )/*webSocket.send(initMessage) // ✅ Send init message*/
+                sendMessage(initMessage) // Send initial message after connection
+
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {

@@ -4,4 +4,5 @@ data class CryptoAsset(
     val name: String,
     val symbol: String,
     val price: Double,
+    val localIcon: Int
 )

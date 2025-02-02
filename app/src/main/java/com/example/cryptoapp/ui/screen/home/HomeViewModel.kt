@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
                     println("New message received: $it")
                     if (it != null) {
                         _cryptoAsssetsData.value = _cryptoAsssetsData.value.map { cryptoAsset ->
-                            if (it.params[0] == cryptoAsset.symbol+"_USDT") {
+                            if (it.params[0] == cryptoAsset.symbol + "_USDT") {
                                 cryptoAsset.copy(price = it.params[1].toDouble())
                             } else {
                                 cryptoAsset
@@ -71,7 +71,14 @@ class HomeViewModel @Inject constructor(
     }
 
     fun connectWebSocket() {/*repository.startWebSocket("wss://api.whitebit.com/ws")*/
-        repository.startWebSocket()
+        repository.startWebSocket(
+            SocketRequest(
+                id = 3,
+                method = "lastprice_subscribe",
+                params = _cryptoAsssetsData.value.map {
+                    it.symbol + "_USDT"
+                })
+        )
     }
 
     fun closeWebSocket() {
@@ -80,7 +87,8 @@ class HomeViewModel @Inject constructor(
 
     fun sendMessage() {
         repository.sendMessage(
-            SocketRequest(id = 3,
+            SocketRequest(
+                id = 3,
                 method = "lastprice_subscribe",
                 params = _cryptoAsssetsData.value.map {
                     it.symbol + "_USDT"

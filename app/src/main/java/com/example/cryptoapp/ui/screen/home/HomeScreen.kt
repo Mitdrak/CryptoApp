@@ -2,14 +2,17 @@ package com.example.cryptoapp.ui.screen.home
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -30,9 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.cryptoapp.R
 import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.dto.SocketResponse
 import kotlinx.coroutines.delay
@@ -51,17 +56,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = {
-                viewModel.connectWebSocket()
-            }) { Text(text = "Connect") }
-            Button(onClick = {
-                viewModel.closeWebSocket()
-            }) { Text(text = "Close") }
-            Button(onClick = {
-                viewModel.sendMessage()
-
-            }) { Text(text = "Send Message") }
-            Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
                 items(cryptoAssets) { asset ->
                     MessageItem(asset)
@@ -101,18 +95,29 @@ fun MessageItem(message: CryptoAsset) {
             animatedColor
         )
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = message.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
+        Row(
+            modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = message.localIcon),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(50.dp)
             )
-            Text(
-                text = "Price: $${message.price}",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Black
-            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = message.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
+                Text(
+                    text = "Price: $${message.price}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Black
+                )
 
+            }
         }
     }
 }

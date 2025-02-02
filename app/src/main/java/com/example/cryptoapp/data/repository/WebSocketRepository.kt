@@ -15,8 +15,7 @@ class WebSocketRepository @Inject constructor(
 ) {
     val messages: StateFlow<SocketResponse?> = webSocketService.messageFlow // ✅ Expose Flow
 
-    fun startWebSocket() {
-        val initMessage = """{"event": "subscribe", "channel": "trades"}""" // ✅ Modify for Whitebit API
+    fun startWebSocket(initMessage: SocketRequest) {
         webSocketService.connectWebSocket("wss://api.whitebit.com/ws", initMessage)
     }
 
