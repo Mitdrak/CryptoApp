@@ -17,8 +17,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,7 +67,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 .background(color = Color(21, 21, 21)),
         ) {
             //SearchBar
-
             TextField(
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.textFieldColors(
@@ -88,6 +89,20 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                         contentDescription = null,
                         tint = Color.Gray
                     )
+                },
+                trailingIcon = {
+                    if (search.isNotEmpty()) {
+                        Button(
+                            onClick = { viewModel.onSearchQueryChanged("") },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Clear,
+                                contentDescription = null,
+                                tint = Color.Gray
+                            )
+                        }
+                    }
                 }
             )
             LazyColumn {
