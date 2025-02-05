@@ -4,7 +4,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.cryptoapp.ui.screen.home.HomeScreen
+import com.example.cryptoapp.ui.screen.authenticated.home.HomeScreen
+import com.example.cryptoapp.ui.screen.unauthenticated.login.LoginScreen
 
 fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
     navigation(
@@ -17,4 +18,15 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
         }
     }
 
+}
+fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
+    navigation(
+        route = NavigationRoutes.Unauthenticated.NavigationRoute.route,
+        startDestination = NavigationRoutes.Unauthenticated.Login.route
+    ) {
+        //Menu
+        composable(route = NavigationRoutes.Unauthenticated.Login.route) {
+            LoginScreen(navController = navController)
+        }
+    }
 }

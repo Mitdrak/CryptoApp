@@ -1,9 +1,10 @@
-package com.example.cryptoapp.ui.screen.home
+package com.example.cryptoapp.ui.screen.authenticated.home
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,9 @@ import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.dto.SocketResponse
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.delay
 
 
@@ -60,7 +64,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val search by viewModel.searchQuery.collectAsState()
     val filteredCryptoAssets by viewModel.filteredList.collectAsState()
     val isRfreshing by viewModel.isRefreshing.collectAsState()
-
+    val auth by remember { mutableStateOf(Firebase.auth) }
 
     Scaffold { innerPadding ->
         SwipeRefresh(state = SwipeRefreshState(isRfreshing),

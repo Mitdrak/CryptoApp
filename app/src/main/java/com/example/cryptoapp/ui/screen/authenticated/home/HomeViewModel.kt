@@ -1,4 +1,4 @@
-package com.example.cryptoapp.ui.screen.home
+package com.example.cryptoapp.ui.screen.authenticated.home
 
 
 import androidx.lifecycle.ViewModel
