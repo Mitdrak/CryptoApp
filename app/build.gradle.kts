@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization)
     alias(libs.plugins.hilt.android) // Apply the Hilt plugin
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.crashlytics)
     id("com.google.devtools.ksp")
     id("kotlin-kapt") // Required for Hilt
 }
@@ -65,7 +67,13 @@ dependencies {
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.androidx.lifecycle.runtime.ktx.v262)
     //Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation(libs.kotlinx.serialization.json)
+    //Swipe Refresh Layout
+    implementation (libs.accompanist.swiperefresh)
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.auth)
 
 
     implementation(libs.androidx.core.ktx)

@@ -49,6 +49,8 @@ import androidx.navigation.NavController
 import com.example.cryptoapp.R
 import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.dto.SocketResponse
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import kotlinx.coroutines.delay
 
 
@@ -57,61 +59,64 @@ import kotlinx.coroutines.delay
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
     val search by viewModel.searchQuery.collectAsState()
     val filteredCryptoAssets by viewModel.filteredList.collectAsState()
+    val isRfreshing by viewModel.isRefreshing.collectAsState()
 
 
     Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .background(color = Color(21, 21, 21)),
-        ) {
-            //SearchBar
-            TextField(
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedTextColor = Color.Gray,
-                    containerColor = Color(14, 14, 14),
-                ),
-                value = search,
-                onValueChange = {
-                    viewModel.onSearchQueryChanged(it)
-                },
-                placeholder = { Text("Search", color = Color.Gray) },
+        SwipeRefresh(state = SwipeRefreshState(isRfreshing),
+            onRefresh = { viewModel.retryWebSocketConnection() }) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null,
-                        tint = Color.Gray
-                    )
-                },
-                trailingIcon = {
-                    if (search.isNotEmpty()) {
-                        Button(
-                            onClick = { viewModel.onSearchQueryChanged("") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .background(color = Color(21, 21, 21)),
+            ) {
+                //SearchBar
+                TextField(shape = RoundedCornerShape(10.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Gray,
+                        containerColor = Color(14, 14, 14),
+                    ),
+                    value = search,
+                    onValueChange = {
+                        viewModel.onSearchQueryChanged(it)
+                    },
+                    placeholder = { Text("Search", color = Color.Gray) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null,
+                            tint = Color.Gray
+                        )
+                    },
+                    trailingIcon = {
+                        if (search.isNotEmpty()) {
+                            Button(
+                                onClick = {
+                                    viewModel.onSearchQueryChanged("")
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = null,
+                                    tint = Color.Gray
+                                )
+                            }
                         }
+                    })
+                LazyColumn {
+                    items(filteredCryptoAssets) { asset ->
+                        MessageItem(asset)
                     }
-                }
-            )
-            LazyColumn {
-                items(filteredCryptoAssets) { asset ->
-                    MessageItem(asset)
                 }
             }
         }
-
     }
 
 }

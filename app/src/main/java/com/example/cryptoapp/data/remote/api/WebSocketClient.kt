@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,10 @@ class WebSocketClient @Inject constructor(
     private val _messageFlow = MutableStateFlow<SocketResponse?>(null)// ✅ List instead of
     val messageFlow: StateFlow<SocketResponse?> = _messageFlow.asStateFlow()
 
+    private var reconnectAttempts = 0
+    private val maxReconnectAttempts = 5
+    private val reconnectDelay = 5000L // 5 seconds
+
     fun connectWebSocket(url: String, initMessage: SocketRequest) {
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
@@ -40,6 +45,7 @@ class WebSocketClient @Inject constructor(
                 )/*webSocket.send(initMessage) // ✅ Send init message*/
                 println("Init message: $initMessage")
                 sendMessage(initMessage) // Send initial message after connection
+                reconnectAttempts = 0
 
             }
 
@@ -50,7 +56,7 @@ class WebSocketClient @Inject constructor(
                         if (message.id == null) {
                             _messageFlow.value = message // ✅ Emit message to Flow
                         }
-                        Log.d("WebSocket", "Received: $message")
+                        Log.d("WebSocket", "Received[$webSocket]: $message")
                     } catch (e: Exception) {
                         Log.e("WebSocket", "Error parsing message: ${e.message}")
                     }
@@ -58,14 +64,29 @@ class WebSocketClient @Inject constructor(
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e("WebSocket", "Error: ${t.message}")
+                Log.e("WebSocket", "Error: ${t}")
+                /*attemptReconnect(url, initMessage)*/
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                 Log.d("WebSocket", "Closing: $code - $reason")
                 webSocket.close(1000, null)
+                /*attemptReconnect(url, initMessage)*/
             }
         })
+    }
+
+    private fun attemptReconnect(url: String, initMessage: SocketRequest) {
+        if (reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(reconnectDelay)
+                Log.d("WebSocket", "Reconnecting attempt $reconnectAttempts")
+                connectWebSocket(url, initMessage)
+            }
+        } else {
+            Log.e("WebSocket", "Max reconnect attempts reached")
+        }
     }
 
     fun sendMessage(message: SocketRequest) {
@@ -75,5 +96,12 @@ class WebSocketClient @Inject constructor(
 
     fun closeWebSocket() {
         webSocket?.close(1000, "Closing connection")
+        webSocket = null
+    }
+
+    fun disconnectWebSocket() {
+        webSocket?.cancel(
+        )
+        webSocket = null
     }
 }

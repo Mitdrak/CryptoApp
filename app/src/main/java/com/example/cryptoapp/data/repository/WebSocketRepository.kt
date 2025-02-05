@@ -25,4 +25,7 @@ class WebSocketRepository @Inject constructor(
     fun closeConnection(){
         webSocketService.closeWebSocket()
     }
+    fun disconnectWebSocket(){
+        webSocketService.closeWebSocket()
+    }
 }

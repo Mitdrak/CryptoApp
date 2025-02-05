@@ -29,6 +29,13 @@ class HomeViewModel @Inject constructor(
     private val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
     private val _searchQuery = MutableStateFlow("") // Holds the user's search input
     var searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    init {
+        firstTimeSetup()
+        collectMessages()
+    }
 
     // Computed state: Filtered list based on search query
     val filteredList: StateFlow<List<CryptoAsset>> =
@@ -40,16 +47,18 @@ class HomeViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-
-    init {
-        firstTimeSetup()
-        collectMessages()
-    }
-
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
 
+    fun retryWebSocketConnection() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            closeWebSocket()
+            connectWebSocket()
+            _isRefreshing.value = false
+        }
+    }
     private fun firstTimeSetup() {
         viewModelScope.launch {
             cryptoRepository.initialDatabaseIfEmpty()
@@ -100,7 +109,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun closeWebSocket() {
-        repository.closeConnection()
+        println("Closing WebSocket connection en ViewModel")
+        repository.disconnectWebSocket()
     }
 
     fun sendMessage() {
