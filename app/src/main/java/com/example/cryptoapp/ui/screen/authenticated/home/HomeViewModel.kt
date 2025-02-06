@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.dto.SocketRequest
 import com.example.cryptoapp.data.model.dto.SocketResponse
+import com.example.cryptoapp.data.repository.AuthRepository
 import com.example.cryptoapp.data.repository.CryptoRepository
 import com.example.cryptoapp.data.repository.WebSocketRepository
 import com.example.cryptoapp.util.cryptoAssets
@@ -23,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: WebSocketRepository, private val cryptoRepository: CryptoRepository
+    private val repository: WebSocketRepository, private val cryptoRepository: CryptoRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
@@ -35,6 +37,12 @@ class HomeViewModel @Inject constructor(
     init {
         firstTimeSetup()
         collectMessages()
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authRepository.signOut()
+        }
     }
 
     // Computed state: Filtered list based on search query

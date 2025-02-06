@@ -64,7 +64,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
     val search by viewModel.searchQuery.collectAsState()
     val filteredCryptoAssets by viewModel.filteredList.collectAsState()
     val isRfreshing by viewModel.isRefreshing.collectAsState()
-    val auth by remember { mutableStateOf(Firebase.auth) }
 
     Scaffold { innerPadding ->
         SwipeRefresh(state = SwipeRefreshState(isRfreshing),
@@ -75,6 +74,15 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                     .fillMaxSize()
                     .background(color = Color(21, 21, 21)),
             ) {
+                Button(
+                    onClick = {
+                        viewModel.signOut()
+                        navController.navigate("login")
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Sign Out")
+                }
                 //SearchBar
                 TextField(shape = RoundedCornerShape(10.dp),
                     colors = TextFieldDefaults.textFieldColors(

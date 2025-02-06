@@ -1,6 +1,7 @@
 package com.example.cryptoapp.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -9,7 +10,7 @@ interface AuthRepository {
     suspend fun signIn(email: String, password: String): Boolean
     suspend fun signUp(email: String, password: String): Boolean
     suspend fun signOut()
-    fun getCurrentUser(): String?
+    fun getCurrentUser(): FirebaseUser?
 }
 
 
@@ -37,7 +38,8 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
         firebaseAuth.signOut()
     }
 
-    override fun getCurrentUser(): String? {
-        return firebaseAuth.currentUser?.email
+    override fun getCurrentUser(): FirebaseUser? {
+        val currentUser = firebaseAuth.currentUser
+        return currentUser
     }
 }

@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,10 +39,22 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     val loginState by remember {
         viewModel.loginState
     }
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+
     if(loginState.isLoginSuccessful){
         navController.navigate(NavigationRoutes.Authenticated.Home.route) {
             popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
                 inclusive = true
+            }
+        }
+    }
+
+    LaunchedEffect(isLoggedIn) {
+        if(isLoggedIn){
+            navController.navigate(NavigationRoutes.Authenticated.Home.route) {
+                popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
+                    inclusive = true
+                }
             }
         }
     }

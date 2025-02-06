@@ -8,6 +8,8 @@ import com.example.cryptoapp.data.repository.AuthRepository
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginState
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.log
@@ -16,6 +18,18 @@ import kotlin.math.log
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
     var loginState = mutableStateOf(LoginState())
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> get() = _isLoggedIn
+
+
+    init{
+        checkIfUserIsLoggedIn()
+    }
+
+    private fun checkIfUserIsLoggedIn() {
+        val currentUser = authRepository.getCurrentUser()
+        _isLoggedIn.value = currentUser != null
+    }
 
     fun signIn() {
         viewModelScope.launch {
