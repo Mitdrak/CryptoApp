@@ -34,7 +34,7 @@ import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
 
     val loginState by remember {
         viewModel.loginState
@@ -42,20 +42,12 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     if(loginState.isLoginSuccessful){
-        navController.navigate(NavigationRoutes.Authenticated.Home.route) {
-            popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
-                inclusive = true
-            }
-        }
+        onNavigateToHome()
     }
 
     LaunchedEffect(isLoggedIn) {
         if(isLoggedIn){
-            navController.navigate(NavigationRoutes.Authenticated.Home.route) {
-                popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
-                    inclusive = true
-                }
-            }
+            onNavigateToHome()
         }
     }
 

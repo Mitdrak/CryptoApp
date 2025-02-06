@@ -60,7 +60,7 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
     val search by viewModel.searchQuery.collectAsState()
     val filteredCryptoAssets by viewModel.filteredList.collectAsState()
     val isRfreshing by viewModel.isRefreshing.collectAsState()
@@ -77,7 +77,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = hiltView
                 Button(
                     onClick = {
                         viewModel.signOut()
-                        navController.navigate("login")
+                        onNavigateToLogin()
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {

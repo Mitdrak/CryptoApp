@@ -14,11 +14,19 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
     ) {
         //Menu
         composable(route = NavigationRoutes.Authenticated.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(
+                onNavigateToLogin = {
+                    navController.navigate(NavigationRoutes.Unauthenticated.Login.route) {
+                        popUpTo(route = NavigationRoutes.Authenticated.NavigationRoute.route) {
+                            inclusive = true
+                        }
+                    }                }
+            )
         }
     }
 
 }
+
 fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
     navigation(
         route = NavigationRoutes.Unauthenticated.NavigationRoute.route,
@@ -26,7 +34,13 @@ fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
     ) {
         //Menu
         composable(route = NavigationRoutes.Unauthenticated.Login.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(onNavigateToHome = {
+                navController.navigate(NavigationRoutes.Authenticated.Home.route) {
+                    popUpTo(route = NavigationRoutes.Unauthenticated.NavigationRoute.route) {
+                        inclusive = true
+                    }
+                }
+            })
         }
     }
 }
