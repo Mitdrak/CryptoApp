@@ -10,7 +10,7 @@ interface AuthRepository {
     suspend fun signIn(email: String, password: String): Boolean
     suspend fun signUp(email: String, password: String): Boolean
     suspend fun signOut()
-    fun getCurrentUser(): FirebaseUser?
+    suspend fun getCurrentUser(): FirebaseUser?
 }
 
 
@@ -38,7 +38,7 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
         firebaseAuth.signOut()
     }
 
-    override fun getCurrentUser(): FirebaseUser? {
+    override suspend fun getCurrentUser(): FirebaseUser? {
         val currentUser = firebaseAuth.currentUser
         return currentUser
     }
