@@ -85,6 +85,16 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // Mockito for mocking dependencies
+    testImplementation (libs.mockito.core)
+    testImplementation (libs.mockito.kotlin)
+    // Coroutines testing
+    testImplementation (libs.kotlinx.coroutines.test)
+    // Mockk (alternative to Mockito, simpler for Kotlin)
+    testImplementation (libs.mockk)
+    // Truth (for better assertions)
+    testImplementation (libs.truth)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
