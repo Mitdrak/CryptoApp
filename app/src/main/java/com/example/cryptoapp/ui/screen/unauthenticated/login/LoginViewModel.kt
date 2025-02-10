@@ -1,19 +1,16 @@
 package com.example.cryptoapp.ui.screen.unauthenticated.login
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cryptoapp.data.repository.AuthRepository
+import com.example.cryptoapp.domain.repository.AuthRepository
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginState
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 
 @HiltViewModel

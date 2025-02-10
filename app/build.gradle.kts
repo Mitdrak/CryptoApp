@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.Test
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -28,8 +30,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -48,28 +49,30 @@ android {
 dependencies {
     // Hilt dependencies
     implementation(libs.hilt.android)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation)
     // Retrofit (API Calls)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
     // OkHttp (for WebSocket)
-    implementation (libs.okhttp3.okhttp)
-    implementation (libs.logging.interceptor.v4120)
+    implementation(libs.okhttp3.okhttp)
+    implementation(libs.logging.interceptor.v4120)
     // Room (Local Database)
-    implementation (libs.androidx.room.runtime)
+    implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.hilt.compiler)
     ksp(libs.androidx.room.compiler)
-    implementation (libs.androidx.room.ktx)
+    implementation(libs.androidx.room.ktx)
     // Coroutines & Flow
-    implementation (libs.kotlinx.coroutines.core)
-    implementation (libs.kotlinx.coroutines.android)
-    implementation (libs.androidx.lifecycle.runtime.ktx.v262)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
     //Serialization
     implementation(libs.kotlinx.serialization.json)
     //Swipe Refresh Layout
-    implementation (libs.accompanist.swiperefresh)
+    implementation(libs.accompanist.swiperefresh)
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
@@ -85,27 +88,39 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    androidTestImplementation(libs.androidx.junit)
+    // JUnit for unit tests
+    testImplementation(libs.junit)
     // Mockito for mocking dependencies
-    testImplementation (libs.mockito.core)
-    testImplementation (libs.mockito.kotlin)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
     // Coroutines testing
-    testImplementation (libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.coroutines.test)
     // Mockk (alternative to Mockito, simpler for Kotlin)
-    testImplementation (libs.mockk)
+    testImplementation(libs.mockk)
+    testImplementation (libs.mockito.inline)
+    testImplementation (libs.mockwebserver) // MockWebServer for testing
+
     // Truth (for better assertions)
+    testImplementation(libs.truth)
+
+    testImplementation (libs.turbine)
     testImplementation (libs.truth)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+
+
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-
 }
-kapt{
+
+
+kapt {
     correctErrorTypes = true
 }

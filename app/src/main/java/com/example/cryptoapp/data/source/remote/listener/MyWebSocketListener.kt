@@ -1,4 +1,4 @@
-package com.example.cryptoapp.data.remote.listener
+package com.example.cryptoapp.data.source.remote.listener
 
 import android.util.Log
 import com.example.cryptoapp.data.model.dto.SocketResponse

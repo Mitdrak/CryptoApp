@@ -1,4 +1,4 @@
-package com.example.cryptoapp.data.repository
+package com.example.cryptoapp.domain.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser

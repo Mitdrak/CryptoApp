@@ -1,7 +1,6 @@
-package com.example.cryptoapp.data.repository
+package com.example.cryptoapp.domain.repository
 
-import com.example.cryptoapp.data.local.dao.CryptoAssetDao
-import com.example.cryptoapp.data.model.dto.CryptoAsset
+import com.example.cryptoapp.data.source.local.dao.CryptoAssetDao
 import com.example.cryptoapp.data.model.dto.SocketResponse
 import com.example.cryptoapp.data.model.entity.CryptoAssetEntity
 import com.example.cryptoapp.util.cryptoAssets
@@ -12,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CryptoRepository @Inject constructor(private val dao: CryptoAssetDao) {
+class LocalCryptoRepository @Inject constructor(private val dao: CryptoAssetDao) {
     val allCryptoAssets: Flow<List<CryptoAssetEntity>> = dao.getAllCryptoAssets()
 
     suspend fun checkCryptoAssetsCount(): Int {

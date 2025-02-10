@@ -1,10 +1,10 @@
-package com.example.cryptoapp.data.local
+package com.example.cryptoapp.data.source.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.cryptoapp.data.local.dao.CryptoAssetDao
+import com.example.cryptoapp.data.source.local.dao.CryptoAssetDao
 import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.entity.CryptoAssetEntity
 

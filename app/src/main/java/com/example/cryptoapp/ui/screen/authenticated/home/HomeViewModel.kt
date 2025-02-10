@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoapp.data.model.dto.CryptoAsset
 import com.example.cryptoapp.data.model.dto.SocketRequest
-import com.example.cryptoapp.data.model.dto.SocketResponse
-import com.example.cryptoapp.data.repository.AuthRepository
-import com.example.cryptoapp.data.repository.CryptoRepository
-import com.example.cryptoapp.data.repository.WebSocketRepository
+import com.example.cryptoapp.domain.repository.AuthRepository
+import com.example.cryptoapp.domain.repository.LocalCryptoRepository
+import com.example.cryptoapp.domain.repository.WebSocketRepository
+import com.example.cryptoapp.domain.usecases.CloseWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.DisconnectWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.SendWebSocketMessageUseCase
+import com.example.cryptoapp.domain.usecases.StartWebSocketUseCase
 import com.example.cryptoapp.util.cryptoAssets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +27,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: WebSocketRepository, private val cryptoRepository: CryptoRepository,
+    private val startWebSocketUseCase: StartWebSocketUseCase,
+    private val sendWebSocketMessageUseCase: SendWebSocketMessageUseCase,
+    private val closeWebSocketUseCase: CloseWebSocketUseCase,
+    private val disconnectWebSocketUseCase: DisconnectWebSocketUseCase,
+    private val repository: WebSocketRepository,
+    private val localCryptoRepository: LocalCryptoRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
+    val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
     private val _searchQuery = MutableStateFlow("") // Holds the user's search input
     var searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
     private val _isRefreshing = MutableStateFlow(false)
@@ -67,9 +75,10 @@ class HomeViewModel @Inject constructor(
             _isRefreshing.value = false
         }
     }
-    private fun firstTimeSetup() {
+
+    fun firstTimeSetup() {
         viewModelScope.launch {
-            cryptoRepository.initialDatabaseIfEmpty()
+            localCryptoRepository.initialDatabaseIfEmpty()
             loadCryptoAssets()
             connectWebSocket() // Connect to WebSocket after data is loaded
 
@@ -79,7 +88,7 @@ class HomeViewModel @Inject constructor(
 
     private fun loadCryptoAssets() {
         viewModelScope.launch {
-            cryptoRepository.allCryptoAssets.collect { entities ->
+            localCryptoRepository.allCryptoAssets.collect { entities ->
                 _cryptoAsssetsData.value = entities.map { entity ->
                     CryptoAsset(
                         name = entity.name,
@@ -98,7 +107,7 @@ class HomeViewModel @Inject constructor(
             try {
                 repository.messages.collectLatest { message ->
                     message?.let {
-                        cryptoRepository.updateCryptoPriceFromSocket(it)
+                        localCryptoRepository.updateCryptoPriceFromSocket(it)
                     }
                 }
             } catch (e: Exception) {
@@ -109,27 +118,15 @@ class HomeViewModel @Inject constructor(
 
 
     fun connectWebSocket() {
-        repository.startWebSocket(
-            SocketRequest(id = 3,
-                method = "lastprice_subscribe",
-                params = cryptoAssets.map { it.symbol + "_USDT" })
-        )
+        startWebSocketUseCase()
     }
 
     fun closeWebSocket() {
         println("Closing WebSocket connection en ViewModel")
-        repository.disconnectWebSocket()
+        closeWebSocketUseCase()
+    }
+    fun disconnectWebSocket() {
+        disconnectWebSocketUseCase()
     }
 
-    fun sendMessage() {
-        repository.sendMessage(
-            SocketRequest(
-                id = 3,
-                method = "lastprice_subscribe",
-                params = _cryptoAsssetsData.value.map {
-                    it.symbol + "_USDT"
-                })
-        )
-
-    }
 }

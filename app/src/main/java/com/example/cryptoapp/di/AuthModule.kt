@@ -1,7 +1,7 @@
 package com.example.cryptoapp.di
 
-import com.example.cryptoapp.data.repository.AuthRepository
-import com.example.cryptoapp.data.repository.AuthRepositoryImpl
+import com.example.cryptoapp.domain.repository.AuthRepository
+import com.example.cryptoapp.domain.repository.AuthRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
