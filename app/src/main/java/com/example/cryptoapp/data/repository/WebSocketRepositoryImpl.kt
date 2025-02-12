@@ -2,7 +2,8 @@ package com.example.cryptoapp.data.repository
 
 import com.example.cryptoapp.data.model.dto.SocketRequest
 import com.example.cryptoapp.data.model.dto.SocketResponse
-import com.example.cryptoapp.data.source.remote.api.WebSocketClient
+import com.example.cryptoapp.data.source.remote.websocket.WebSocketService
+import com.example.cryptoapp.data.source.remote.websocket.WebSocketState
 import com.example.cryptoapp.domain.repository.WebSocketRepository
 import com.example.cryptoapp.util.cryptoAssets
 import kotlinx.coroutines.flow.StateFlow
@@ -11,10 +12,10 @@ import javax.inject.Singleton
 
 @Singleton
 class WebSocketRepositoryImpl @Inject constructor(
-    private val webSocketService: WebSocketClient
+    private val webSocketService: WebSocketService
 ) : WebSocketRepository {
 
-    override val messages: StateFlow<SocketResponse?> = webSocketService.messageFlow
+    override val messages: StateFlow<WebSocketState> = webSocketService.messageFlow
 
     override fun startWebSocket() {
         try {

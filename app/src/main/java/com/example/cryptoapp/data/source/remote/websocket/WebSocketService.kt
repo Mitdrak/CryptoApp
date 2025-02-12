@@ -1,4 +1,4 @@
-package com.example.cryptoapp.data.source.remote.api
+package com.example.cryptoapp.data.source.remote.websocket
 
 import android.util.Log
 import com.example.cryptoapp.data.model.dto.SocketRequest
@@ -16,12 +16,14 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import okio.EOFException
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
-interface WebSocketClient {
-    val messageFlow: StateFlow<SocketResponse?>
+interface WebSocketService {
+    val messageFlow: StateFlow<WebSocketState>
     fun connectWebSocket(url: String, initMessage: SocketRequest)
     fun sendMessage(message: SocketRequest)
     fun closeWebSocket()
@@ -29,14 +31,15 @@ interface WebSocketClient {
 }
 
 @Singleton
-class WebSocketClientImpl @Inject constructor(
+class WebSocketServiceImpl @Inject constructor(
     private val client: OkHttpClient
-): WebSocketClient {
+) : WebSocketService {
     private var webSocket: WebSocket? = null
     private val gson = Gson()
 
-    private val _messageFlow = MutableStateFlow<SocketResponse?>(null)// ✅ List instead of
-    override val messageFlow: StateFlow<SocketResponse?> = _messageFlow.asStateFlow()
+    private val _messageFlow =
+        MutableStateFlow<WebSocketState>(WebSocketState.Disconnected)// ✅ List instead of
+    override val messageFlow: StateFlow<WebSocketState> = _messageFlow.asStateFlow()
 
     private var reconnectAttempts = 0
     private val maxReconnectAttempts = 5
@@ -46,38 +49,42 @@ class WebSocketClientImpl @Inject constructor(
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d(
-                    "WebSocket", "Connected"
-                )/*webSocket.send(initMessage) // ✅ Send init message*/
+                _messageFlow.value = WebSocketState.Connected // ✅ Emit connected state to Flow
+                Timber.d("WebSocket connected")
                 println("Init message: $initMessage")
                 sendMessage(initMessage) // Send initial message after connection
                 reconnectAttempts = 0
 
             }
 
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                if (t is EOFException) {
+                    Timber.d("WebSocket EOFException")
+                    _messageFlow.value = WebSocketState.Disconnected
+                } else {
+                    Timber.e(t, "WebSocket error")
+                    _messageFlow.value = WebSocketState.Error("Error: ${t.message}")
+                }
+            }
+
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                Timber.d("WebSocket closing: $code - $reason")
+                _messageFlow.value = WebSocketState.Disconnected
+                webSocket.close(1000, null)
+            }
+
             override fun onMessage(webSocket: WebSocket, text: String) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val message = Gson().fromJson(text, SocketResponse::class.java)
-                        if (message.id == null) {
-                            _messageFlow.value = message // ✅ Emit message to Flow
-                        }
-                        Log.d("WebSocket", "Received[$webSocket]: $message")
+                        _messageFlow.value = WebSocketState.MessageReceived(message)
+                        Timber.tag("WebSocket").d("Received: ${message.params}")
                     } catch (e: Exception) {
-                        Log.e("WebSocket", "Error parsing message: ${e.message}")
+                        Timber.e(e, "Error parsing message")
+                        _messageFlow.value =
+                            WebSocketState.Error("Error parsing message: ${e.message}")
                     }
                 }
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                Log.e("WebSocket", "Error: ${t}")
-                /*attemptReconnect(url, initMessage)*/
-            }
-
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d("WebSocket", "Closing: $code - $reason")
-                webSocket.close(1000, null)
-                /*attemptReconnect(url, initMessage)*/
             }
         })
     }
@@ -87,11 +94,11 @@ class WebSocketClientImpl @Inject constructor(
             reconnectAttempts++
             CoroutineScope(Dispatchers.IO).launch {
                 delay(reconnectDelay)
-                Log.d("WebSocket", "Reconnecting attempt $reconnectAttempts")
+                Timber.tag("WebSocket").d("Reconnecting attempt $reconnectAttempts")
                 connectWebSocket(url, initMessage)
             }
         } else {
-            Log.e("WebSocket", "Max reconnect attempts reached")
+            Timber.tag("WebSocket").e("Max reconnect attempts reached")
         }
     }
 

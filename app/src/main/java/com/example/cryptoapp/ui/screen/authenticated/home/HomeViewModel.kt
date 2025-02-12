@@ -4,36 +4,35 @@ package com.example.cryptoapp.ui.screen.authenticated.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoapp.data.model.dto.CryptoAsset
-import com.example.cryptoapp.data.model.dto.SocketRequest
-import com.example.cryptoapp.domain.repository.AuthRepository
+import com.example.cryptoapp.data.source.remote.websocket.WebSocketState
 import com.example.cryptoapp.domain.repository.LocalCryptoRepository
 import com.example.cryptoapp.domain.repository.WebSocketRepository
-import com.example.cryptoapp.domain.usecases.CloseWebSocketUseCase
-import com.example.cryptoapp.domain.usecases.DisconnectWebSocketUseCase
-import com.example.cryptoapp.domain.usecases.SendWebSocketMessageUseCase
-import com.example.cryptoapp.domain.usecases.StartWebSocketUseCase
-import com.example.cryptoapp.util.cryptoAssets
+import com.example.cryptoapp.domain.usecases.auth.SignOutUseCase
+import com.example.cryptoapp.domain.usecases.socket.CloseWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.DisconnectWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.StartWebSocketUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val startWebSocketUseCase: StartWebSocketUseCase,
-    private val sendWebSocketMessageUseCase: SendWebSocketMessageUseCase,
     private val closeWebSocketUseCase: CloseWebSocketUseCase,
     private val disconnectWebSocketUseCase: DisconnectWebSocketUseCase,
+    private val signOutUseCase: SignOutUseCase,
+
     private val repository: WebSocketRepository,
     private val localCryptoRepository: LocalCryptoRepository,
-    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
@@ -49,7 +48,8 @@ class HomeViewModel @Inject constructor(
 
     fun signOut() {
         viewModelScope.launch {
-            authRepository.signOut()
+            closeWebSocket()
+            signOutUseCase()
         }
     }
 
@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
 
     fun firstTimeSetup() {
         viewModelScope.launch {
-            localCryptoRepository.initialDatabaseIfEmpty()
+            localCryptoRepository.initializeDatabaseIfEmpty()
             loadCryptoAssets()
             connectWebSocket() // Connect to WebSocket after data is loaded
 
@@ -86,7 +86,7 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    private fun loadCryptoAssets() {
+    fun loadCryptoAssets() {
         viewModelScope.launch {
             localCryptoRepository.allCryptoAssets.collect { entities ->
                 _cryptoAsssetsData.value = entities.map { entity ->
@@ -94,7 +94,7 @@ class HomeViewModel @Inject constructor(
                         name = entity.name,
                         symbol = entity.symbol,
                         price = entity.price,
-                        localIcon = entity.imageUrl
+                        idIcon = entity.imageUrl
                     )
                 }.sortedBy { it.name }
 
@@ -104,15 +104,19 @@ class HomeViewModel @Inject constructor(
 
     private fun collectMessages() {
         viewModelScope.launch {
-            try {
-                repository.messages.collectLatest { message ->
-                    message?.let {
-                        localCryptoRepository.updateCryptoPriceFromSocket(it)
+            repository.messages
+                .catch { e ->
+                    Timber.e(e, "Error collecting WebSocket messages")
+                }
+                .collect { message ->
+                    try {
+                        if (message is WebSocketState.MessageReceived) {
+                            localCryptoRepository.updateCryptoPriceFromSocket(message)
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error updating price from WebSocket message")
                     }
                 }
-            } catch (e: Exception) {
-                println("Error updating price: ${e.message}")
-            }
         }
     }
 
@@ -125,6 +129,7 @@ class HomeViewModel @Inject constructor(
         println("Closing WebSocket connection en ViewModel")
         closeWebSocketUseCase()
     }
+
     fun disconnectWebSocket() {
         disconnectWebSocketUseCase()
     }

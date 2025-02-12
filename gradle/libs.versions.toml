@@ -30,12 +30,13 @@ retrofit = "2.9.0"
 roomKtx = "2.6.1"
 hiltCompilerVersion = "2.52"
 
-firebaseBom = "33.1.1"
+firebaseBom = "33.9.0"
 services = "4.4.2"
 crashlytics = "3.0.2"
 truth = "1.1.3"
 junitJupiter = "5.8.1"
 turbine = "1.0.0"
+junitKtx = "1.2.1"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
@@ -85,6 +86,7 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore-ktx" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 
 [plugins]

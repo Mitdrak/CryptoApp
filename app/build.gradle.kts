@@ -49,6 +49,7 @@ android {
 dependencies {
     // Hilt dependencies
     implementation(libs.hilt.android)
+    implementation(libs.androidx.junit.ktx)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.jupiter)
     kapt(libs.hilt.compiler)
@@ -78,6 +79,8 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+
 
 
     implementation(libs.androidx.core.ktx)
@@ -110,6 +113,7 @@ dependencies {
 
     testImplementation("androidx.arch.core:core-testing:2.1.0")
 
+    implementation ("com.jakewharton.timber:timber:5.0.1")
 
 
     androidTestImplementation(libs.androidx.espresso.core)

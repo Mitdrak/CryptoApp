@@ -1,13 +1,13 @@
 package com.example.cryptoapp.di
 
 import com.example.cryptoapp.data.repository.WebSocketRepositoryImpl
-import com.example.cryptoapp.data.source.remote.api.WebSocketClient
-import com.example.cryptoapp.data.source.remote.api.WebSocketClientImpl
+import com.example.cryptoapp.data.source.remote.websocket.WebSocketService
+import com.example.cryptoapp.data.source.remote.websocket.WebSocketServiceImpl
 import com.example.cryptoapp.domain.repository.WebSocketRepository
-import com.example.cryptoapp.domain.usecases.CloseWebSocketUseCase
-import com.example.cryptoapp.domain.usecases.DisconnectWebSocketUseCase
-import com.example.cryptoapp.domain.usecases.SendWebSocketMessageUseCase
-import com.example.cryptoapp.domain.usecases.StartWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.CloseWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.DisconnectWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.SendWebSocketMessageUseCase
+import com.example.cryptoapp.domain.usecases.socket.StartWebSocketUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,16 +21,18 @@ object WebSocketModule {
 
     @Provides
     @Singleton
-    fun provideWebSocketClient(okHttpClient: OkHttpClient): WebSocketClient {
-        return WebSocketClientImpl(okHttpClient)
+    fun provideWebSocketClient(okHttpClient: OkHttpClient): WebSocketService {
+        return WebSocketServiceImpl(okHttpClient)
     }
 
     @Provides
     @Singleton
-    fun provideWebSocketRepository(webSocketClient: WebSocketClient): WebSocketRepository {
+    fun provideWebSocketRepository(webSocketClient: WebSocketService): WebSocketRepository {
         return WebSocketRepositoryImpl(webSocketClient)
     }
 
+
+    // Provide the use cases
     @Provides
     @Singleton
     fun provideStartWebSocketUseCase(repository: WebSocketRepository): StartWebSocketUseCase {

@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class CryptoAssetEntity(
     @PrimaryKey val symbol: String,
     val name: String,
-    val price: Double,
+    var price: Double,
     val imageUrl: Int
 )
