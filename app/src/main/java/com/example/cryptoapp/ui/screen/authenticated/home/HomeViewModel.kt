@@ -9,6 +9,7 @@ import com.example.cryptoapp.domain.repository.LocalCryptoRepository
 import com.example.cryptoapp.domain.repository.WebSocketRepository
 import com.example.cryptoapp.domain.usecases.auth.SignOutUseCase
 import com.example.cryptoapp.domain.usecases.socket.CloseWebSocketUseCase
+import com.example.cryptoapp.domain.usecases.socket.CollectWebSocketMessagesUseCase
 import com.example.cryptoapp.domain.usecases.socket.DisconnectWebSocketUseCase
 import com.example.cryptoapp.domain.usecases.socket.StartWebSocketUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,8 +31,7 @@ class HomeViewModel @Inject constructor(
     private val closeWebSocketUseCase: CloseWebSocketUseCase,
     private val disconnectWebSocketUseCase: DisconnectWebSocketUseCase,
     private val signOutUseCase: SignOutUseCase,
-
-    private val repository: WebSocketRepository,
+    private val collectMessagesUseCase: CollectWebSocketMessagesUseCase,
     private val localCryptoRepository: LocalCryptoRepository,
 ) : ViewModel() {
 
@@ -104,7 +104,7 @@ class HomeViewModel @Inject constructor(
 
     private fun collectMessages() {
         viewModelScope.launch {
-            repository.messages
+            collectMessagesUseCase.messages
                 .catch { e ->
                     Timber.e(e, "Error collecting WebSocket messages")
                 }

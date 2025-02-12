@@ -47,46 +47,10 @@ class WebSocketServiceImpl @Inject constructor(
 
     override fun connectWebSocket(url: String, initMessage: SocketRequest) {
         val request = Request.Builder().url(url).build()
-        webSocket = client.newWebSocket(request, object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                _messageFlow.value = WebSocketState.Connected // ✅ Emit connected state to Flow
-                Timber.d("WebSocket connected")
-                println("Init message: $initMessage")
-                sendMessage(initMessage) // Send initial message after connection
-                reconnectAttempts = 0
+        val listener = CryptoWebSocketListener(_messageFlow) // Use the separate listener class
 
-            }
-
-            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                if (t is EOFException) {
-                    Timber.d("WebSocket EOFException")
-                    _messageFlow.value = WebSocketState.Disconnected
-                } else {
-                    Timber.e(t, "WebSocket error")
-                    _messageFlow.value = WebSocketState.Error("Error: ${t.message}")
-                }
-            }
-
-            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Timber.d("WebSocket closing: $code - $reason")
-                _messageFlow.value = WebSocketState.Disconnected
-                webSocket.close(1000, null)
-            }
-
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val message = Gson().fromJson(text, SocketResponse::class.java)
-                        _messageFlow.value = WebSocketState.MessageReceived(message)
-                        Timber.tag("WebSocket").d("Received: ${message.params}")
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error parsing message")
-                        _messageFlow.value =
-                            WebSocketState.Error("Error parsing message: ${e.message}")
-                    }
-                }
-            }
-        })
+        webSocket = client.newWebSocket(request, listener)
+        sendMessage(initMessage) // Send the init message *after* establishing the connection
     }
 
     private fun attemptReconnect(url: String, initMessage: SocketRequest) {

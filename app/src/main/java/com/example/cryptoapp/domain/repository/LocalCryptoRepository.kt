@@ -78,11 +78,6 @@ class LocalCryptoRepositoryImpl @Inject constructor(
 
     override suspend fun updateCryptoPriceFromSocket(response: WebSocketState) {
         withContext(Dispatchers.IO) {
-            /*if (checkCryptoAssetsCount() == 0) {
-                Timber.w("No data in database")
-                return@withContext
-            }*/
-
             // Validate WebSocket response
             if (response !is WebSocketState.MessageReceived) {
                 Timber.e("Invalid WebSocket response: ${response}")
