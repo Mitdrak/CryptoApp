@@ -100,7 +100,7 @@ class LocalCryptoRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun flushCacheToDatabase() {
+    suspend fun flushCacheToDatabase() {
         withContext(Dispatchers.IO) {
             mutex.withLock {
                 if (cache.isNotEmpty()) {

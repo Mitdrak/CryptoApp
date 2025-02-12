@@ -49,40 +49,42 @@ android {
 dependencies {
     // Hilt dependencies
     implementation(libs.hilt.android)
-    implementation(libs.androidx.junit.ktx)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation)
+    kapt(libs.hilt.compiler)
+
     // Retrofit (API Calls)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation(libs.logging.interceptor)
+
     // OkHttp (for WebSocket)
     implementation(libs.okhttp3.okhttp)
-    implementation(libs.logging.interceptor.v4120)
+    implementation(libs.logging.interceptor.okhttp3)
+
+
     // Room (Local Database)
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.hilt.compiler)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
+
     // Coroutines & Flow
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.androidx.lifecycle.runtime.ktx.v262)
-    //Serialization
+
+    // Serialization
     implementation(libs.kotlinx.serialization.json)
-    //Swipe Refresh Layout
+
+    // Swipe Refresh Layout
     implementation(libs.accompanist.swiperefresh)
-    //Firebase
+
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation(libs.play.services.auth)
 
-
-
+    // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -92,36 +94,29 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    androidTestImplementation(libs.androidx.junit)
-    // JUnit for unit tests
+    // Timber
+    implementation(libs.timber)
+
+    // Testing dependencies
     testImplementation(libs.junit)
-    // Mockito for mocking dependencies
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
-    // Coroutines testing
     testImplementation(libs.kotlinx.coroutines.test)
-    // Mockk (alternative to Mockito, simpler for Kotlin)
     testImplementation(libs.mockk)
-    testImplementation (libs.mockito.inline)
-    testImplementation (libs.mockwebserver) // MockWebServer for testing
-
-    // Truth (for better assertions)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockwebserver)
     testImplementation(libs.truth)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.core.testing)
 
-    testImplementation (libs.turbine)
-    testImplementation (libs.truth)
-
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
-
-    implementation ("com.jakewharton.timber:timber:5.0.1")
-
-
+    // Android Test dependencies
+    androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
 
 

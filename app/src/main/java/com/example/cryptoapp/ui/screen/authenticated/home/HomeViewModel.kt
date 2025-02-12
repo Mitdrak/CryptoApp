@@ -40,6 +40,9 @@ class HomeViewModel @Inject constructor(
     var searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+    // New state to track errors
+    private val _errorState = MutableStateFlow<String?>(null)
+    val errorState: StateFlow<String?> get()  = _errorState
 
     init {
         firstTimeSetup()
@@ -102,21 +105,40 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun collectMessages() {
+    fun collectMessages() {
         viewModelScope.launch {
-            collectMessagesUseCase.messages
-                .catch { e ->
-                    Timber.e(e, "Error collecting WebSocket messages")
-                }
-                .collect { message ->
+            try {
+                Timber.d("Collecting WebSocket messages...")
+                collectMessagesUseCase.messages.collect { message ->
                     try {
-                        if (message is WebSocketState.MessageReceived) {
-                            localCryptoRepository.updateCryptoPriceFromSocket(message)
+                        when(message) {
+                            is WebSocketState.Connected -> {
+                                Timber.d("WebSocket connected")
+                            }
+
+                            is WebSocketState.Disconnected -> {
+                                Timber.d("WebSocket disconnected")
+                            }
+
+                            is WebSocketState.Error -> {
+                                _errorState.value = message.message
+                                Timber.e("WebSocket error: ${message.message}")
+                            }
+                            is WebSocketState.MessageReceived -> {
+
+                                Timber.d("Received WebSocket message: $message")
+                                localCryptoRepository.updateCryptoPriceFromSocket(message)
+                            }
                         }
                     } catch (e: Exception) {
+                        _errorState.value = "Error updating price from WebSocket message"
                         Timber.e(e, "Error updating price from WebSocket message")
                     }
                 }
+            } catch (e: Exception) {
+                _errorState.value = "Error during WebSocket message collection: ${e.message}"
+                Timber.e(e, "Error collecting WebSocket messages")
+            }
         }
     }
 

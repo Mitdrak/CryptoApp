@@ -11,7 +11,6 @@ val cryptoAssets = listOf(
     CryptoAsset("Polkadot", "DOT", 0.0, idIcon = R.drawable.polkadot_new_dot_logo),
     CryptoAsset("Dogecoin", "DOGE", 0.0, idIcon = R.drawable.dogecoin_doge_logo),
     CryptoAsset("Chainlink", "LINK", 0.0, idIcon = R.drawable.chainlink_link_logo),
-    CryptoAsset("Litecoin", "LTC", 0.0, idIcon = R.drawable.litecoin_ltc_logo),
     CryptoAsset("Avalanche", "AVAX", 0.0, idIcon = R.drawable.avalanche_avax_logo),
     CryptoAsset("Shiba Inu", "SHIB", 0.0, idIcon = R.drawable.shiba_inu_shib_logo),
     CryptoAsset("Uniswap", "UNI", 0.0, idIcon = R.drawable.uniswap_uni_logo),
