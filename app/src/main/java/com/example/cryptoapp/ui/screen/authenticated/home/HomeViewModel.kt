@@ -1,6 +1,7 @@
 package com.example.cryptoapp.ui.screen.authenticated.home
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptoapp.data.model.dto.CryptoAsset
@@ -18,7 +19,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -91,8 +94,10 @@ class HomeViewModel @Inject constructor(
 
     fun loadCryptoAssets() {
         viewModelScope.launch {
-            localCryptoRepository.allCryptoAssets.collect { entities ->
+            try {
+                val entities = localCryptoRepository.allCryptoAssets.first() // Use first()
                 _cryptoAsssetsData.value = entities.map { entity ->
+                    Timber.d("Loading asset: ${entity.name}")
                     CryptoAsset(
                         name = entity.name,
                         symbol = entity.symbol,
@@ -100,7 +105,11 @@ class HomeViewModel @Inject constructor(
                         idIcon = entity.imageUrl
                     )
                 }.sortedBy { it.name }
-
+            } catch (e: Exception) {
+                // Handle exceptions, e.g., log them
+                Timber.tag("CryptoAssets").e("Error loading assets: ${e.message}")
+                // Consider setting a default value or showing an error message
+                _cryptoAsssetsData.value = emptyList() // Example: Set to empty list on error
             }
         }
     }
@@ -127,6 +136,15 @@ class HomeViewModel @Inject constructor(
                             is WebSocketState.MessageReceived -> {
 
                                 Timber.d("Received WebSocket message: $message")
+                                _cryptoAsssetsData.value = _cryptoAsssetsData.value.map { cryptoAsset ->
+                                    val symbol = message.message.params.getOrNull(0)?.split("_")?.getOrNull(0)
+                                    val price = message.message.params.getOrNull(1)?.toDoubleOrNull()
+                                    if (cryptoAsset.symbol == symbol) {
+                                        cryptoAsset.copy(price = price ?: cryptoAsset.price)
+                                    } else {
+                                        cryptoAsset
+                                    }
+                                }
                                 localCryptoRepository.updateCryptoPriceFromSocket(message)
                             }
                         }

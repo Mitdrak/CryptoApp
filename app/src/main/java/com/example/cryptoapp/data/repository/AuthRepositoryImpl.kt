@@ -1,6 +1,7 @@
 package com.example.cryptoapp.data.repository
 
 import com.example.cryptoapp.domain.repository.AuthRepository
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
@@ -22,6 +23,7 @@ class AuthRepositoryImpl @Inject constructor(
             false
         }
     }
+
 
     override suspend fun signUp(email: String, password: String): Boolean {
         return try {
