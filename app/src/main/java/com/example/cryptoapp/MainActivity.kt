@@ -50,7 +50,7 @@ fun MainNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = NavigationRoutes.Unauthenticated.NavigationRoute.route
+        startDestination = NavigationRoutes.Unauthenticated.NavigationRoute.route,
     ) {
         authenticatedGraph(navController = navController)
         unauthenticatedGraph(navController = navController)
