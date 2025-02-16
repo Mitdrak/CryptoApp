@@ -13,11 +13,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cryptoapp"
+    namespace = "com.example.cryptosocket"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.cryptoapp"
+        applicationId = "com.example.cryptosocket"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -55,6 +55,7 @@ dependencies {
     // Hilt dependencies
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation)
+    implementation(libs.googleid)
     kapt(libs.hilt.compiler)
 
     // Retrofit (API Calls)
@@ -88,6 +89,11 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.auth)
+    implementation("androidx.credentials:credentials:1.5.0-rc01")
+
+    // optional - needed for credentials support from play services, for devices running
+    // Android 13 and below.
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0-rc01")
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
