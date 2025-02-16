@@ -1,4 +1,4 @@
-import org.gradle.api.tasks.testing.Test
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -24,7 +24,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "CLIENT_ID", properties.getProperty("CLIENT_ID"))
     }
+
 
     buildTypes {
         release {
@@ -42,6 +46,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -99,7 +104,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation (libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation.compose)
 
 
     // Timber

@@ -7,6 +7,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import com.example.cryptosocket.BuildConfig
 import com.example.cryptosocket.domain.repository.AuthRepository
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -76,7 +77,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
-            .setServerClientId("376496304922-irl4if7fk42nkkafvukutj7tu3t883op.apps.googleusercontent.com")
+            .setServerClientId(BuildConfig.CLIENT_ID)
             .build()
         val request: GetCredentialRequest =
             GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()

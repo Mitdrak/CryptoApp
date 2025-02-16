@@ -42,7 +42,7 @@ class LoginViewModel @Inject constructor(
     fun signIn() {
         viewModelScope.launch {
             val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)
-            
+
             if (response) {
                 loginState.value = loginState.value.copy(isLoginSuccessful = true)
             } else {
@@ -57,7 +57,7 @@ class LoginViewModel @Inject constructor(
             if (result) {
                 _isLoggedIn.value = true
             } else {
-                println("Sign in with Google failed ViewModel: ${result}")
+                println("Sign in with Google failed ViewModel: $result")
             }
         }
     }

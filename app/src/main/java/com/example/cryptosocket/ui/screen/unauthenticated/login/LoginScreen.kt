@@ -41,7 +41,6 @@ import com.example.cryptosocket.R
 import com.example.cryptosocket.ui.screen.unauthenticated.login.state.LoginUiEvent
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
@@ -119,6 +118,12 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp)
+                    )
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -168,7 +173,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 onClick = {
 
                     viewModel.signInWithGoogle(activity)
-                 },
+                },
                 modifier = Modifier
                     .padding(horizontal = 80.dp, vertical = 8.dp)
                     .fillMaxWidth()
