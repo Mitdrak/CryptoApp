@@ -8,6 +8,7 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import com.example.cryptosocket.BuildConfig
+import com.example.cryptosocket.data.source.local.dataStore.DataStoreManager
 import com.example.cryptosocket.domain.repository.AuthRepository
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -25,6 +26,7 @@ import javax.inject.Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val credentialManager: CredentialManager,
+    private val dataStoreManager: DataStoreManager
 ) : AuthRepository {
 
 
@@ -58,10 +60,20 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 val tokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
                 println("Google Name: ${tokenCredential.displayName}")
+                println("Google Token: ${tokenCredential.idToken}")
                 println("Google Email: ${tokenCredential.id}")
                 println("Google Image: ${tokenCredential.profilePictureUri}")
                 val authCredential = GoogleAuthProvider.getCredential(tokenCredential.idToken, null)
                 val authResult = firebaseAuth.signInWithCredential(authCredential).await()
+                if (authResult.user != null) {
+                    dataStoreManager.clearGoogleCredentials()
+                    dataStoreManager.saveGoogleCredentials(
+                        displayName = tokenCredential.displayName.toString(),
+                        email = tokenCredential.id,
+                        photoUrl = tokenCredential.profilePictureUri.toString(),
+                        token = tokenCredential.idToken.toString()
+                    )
+                }
                 return authResult.user != null
             } catch (e: GoogleIdTokenParsingException) {
                 Timber.e(e)
@@ -75,19 +87,12 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun getCredentialRequest(activity: Activity): GetCredentialResponse {
 
 
-        val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(BuildConfig.CLIENT_ID)
-            .build()
+        val googleIdOption: GetGoogleIdOption =
+            GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
+                .setServerClientId(BuildConfig.CLIENT_ID).build()
         val request: GetCredentialRequest =
             GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
 
-        /*val request = GetCredentialRequest.Builder().addCredentialOption(
-                GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false).setServerClientId(
-                        "108357273419-ai15j0v1emo3ml82ter8e97n5fs5iv5q.apps.googleusercontent.com"
-
-                    ).setAutoSelectEnabled(false).build()
-            ).build()*/
 
         return credentialManager.getCredential(activity, request)
     }

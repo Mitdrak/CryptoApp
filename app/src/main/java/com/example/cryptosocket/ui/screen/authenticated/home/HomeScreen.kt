@@ -72,6 +72,7 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltVie
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val signOutState by viewModel.signOutState.collectAsState()
+    val userData by viewModel.userData.collectAsState()
 
     LaunchedEffect(signOutState) {
         if (signOutState) {
@@ -90,7 +91,7 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltVie
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
-                        text = "Drawer Content",
+                        text = userData?.name ?: "User",
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White

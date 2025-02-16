@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptosocket.data.model.dto.CryptoAsset
 import com.example.cryptosocket.data.source.remote.websocket.WebSocketState
+import com.example.cryptosocket.domain.models.UserData
 import com.example.cryptosocket.domain.repository.LocalCryptoRepository
+import com.example.cryptosocket.domain.repository.UserRepository
 import com.example.cryptosocket.domain.usecases.auth.SignOutUseCase
 import com.example.cryptosocket.domain.usecases.socket.CloseWebSocketUseCase
 import com.example.cryptosocket.domain.usecases.socket.CollectWebSocketMessagesUseCase
@@ -32,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase,
     private val collectMessagesUseCase: CollectWebSocketMessagesUseCase,
     private val localCryptoRepository: LocalCryptoRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     val _cryptoAsssetsData = MutableStateFlow<List<CryptoAsset>>(emptyList())
@@ -39,18 +42,28 @@ class HomeViewModel @Inject constructor(
     var searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     // New state to track errors
     private val _errorState = MutableStateFlow<String?>(null)
-    val errorState: StateFlow<String?> get()  = _errorState
+    val errorState: StateFlow<String?> get() = _errorState
     private val _signOutState = MutableStateFlow(false)
     val signOutState: StateFlow<Boolean> = _signOutState
-    private val _webSocketState = MutableStateFlow<WebSocketState>(WebSocketState.Disconnected) // Track WebSocket state
+    private val _webSocketState =
+        MutableStateFlow<WebSocketState>(WebSocketState.Disconnected) // Track WebSocket state
     val webSocketState: StateFlow<WebSocketState> = _webSocketState.asStateFlow()
+
 
     init {
         firstTimeSetup()
         collectMessages()
     }
+
+    val userData: StateFlow<UserData?> = userRepository.userData.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
+    )
+
 
     fun signOut() {
         viewModelScope.launch {
@@ -124,21 +137,26 @@ class HomeViewModel @Inject constructor(
                     is WebSocketState.Connected -> {
                         Timber.d("WebSocket connected")
                     }
+
                     is WebSocketState.Disconnected -> {
                         Timber.d("WebSocket disconnected")
                         // Optionally, reconnect after a delay or based on some criteria
                         // viewModelScope.launch { delay(5000); connectWebSocket() }
                     }
+
                     is WebSocketState.Error -> {
                         _errorState.value = state.message
                         Timber.e("WebSocket error: ${state.message}")
                     }
+
                     is WebSocketState.MessageReceived -> {
                         updateCryptoPrices(state) // Extract price update logic
                     }
+
                     WebSocketState.Connecting -> {
                         Timber.d("WebSocket connecting")
                     }
+
                     WebSocketState.Disconnecting -> {
                         Timber.d("WebSocket disconnecting")
                     }
@@ -146,6 +164,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
     private fun updateCryptoPrices(message: WebSocketState.MessageReceived) {
         viewModelScope.launch { // Launch in viewModelScope for database update
             try {

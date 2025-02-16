@@ -89,12 +89,14 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.auth)
-    implementation("androidx.credentials:credentials:1.5.0-rc01")
 
     // optional - needed for credentials support from play services, for devices running
     // Android 13 and below.
+    // Credentials
+    implementation("androidx.credentials:credentials:1.5.0-rc01")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0-rc01")
-
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
     // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

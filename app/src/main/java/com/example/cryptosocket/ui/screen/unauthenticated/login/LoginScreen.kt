@@ -37,21 +37,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-<<<<<<< HEAD:app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
-import androidx.navigation.NavController
-import com.example.cryptoapp.R
-import com.example.cryptoapp.ui.navigation.NavigationRoutes
-import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginState
-import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 2ad0bd1 (change project name and add auth google)
-=======
 import com.example.cryptosocket.R
 import com.example.cryptosocket.ui.screen.unauthenticated.login.state.LoginUiEvent
 
->>>>>>> parent of a1705a4 (new google auth):app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,12 +118,6 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .border(
-                        width = 3.dp,
-                        color = Color(34, 37, 44),
-                        shape = RoundedCornerShape(25.dp)
-                    )
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -182,24 +164,10 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 Text("Sign In")
             }
             Button(
-<<<<<<< HEAD:app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
-<<<<<<< HEAD
-<<<<<<< HEAD:app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
-=======
->>>>>>> parent of a1705a4 (new google auth):app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
                 onClick = {
 
                     viewModel.signInWithGoogle(activity)
                 },
-<<<<<<< HEAD:app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
-=======
-                onClick = { },
->>>>>>> parent of 2ad0bd1 (change project name and add auth google):app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
-=======
-                onClick = { },
->>>>>>> parent of 2ad0bd1 (change project name and add auth google)
-=======
->>>>>>> parent of a1705a4 (new google auth):app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
                 modifier = Modifier
                     .padding(horizontal = 80.dp, vertical = 8.dp)
                     .fillMaxWidth()

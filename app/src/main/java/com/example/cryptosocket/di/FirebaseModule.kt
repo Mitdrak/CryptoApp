@@ -3,6 +3,7 @@ package com.example.cryptosocket.di
 import android.content.Context
 import androidx.credentials.CredentialManager
 import com.example.cryptosocket.data.repository.AuthRepositoryImpl
+import com.example.cryptosocket.data.source.local.dataStore.DataStoreManager
 import com.example.cryptosocket.domain.repository.AuthRepository
 import com.example.cryptosocket.domain.usecases.auth.GetCurrentUserUseCase
 import com.example.cryptosocket.domain.usecases.auth.SignInUseCase
@@ -43,10 +44,11 @@ object FirebaseModule {
     @Singleton
     fun provideAuthRepository(
         firebaseAuth: FirebaseAuth,
-        credentialManager: CredentialManager
+        credentialManager: CredentialManager,
+        dataStoreManager: DataStoreManager
     ):
             AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth, credentialManager)
+        return AuthRepositoryImpl(firebaseAuth, credentialManager, dataStoreManager)
     }
 
 
