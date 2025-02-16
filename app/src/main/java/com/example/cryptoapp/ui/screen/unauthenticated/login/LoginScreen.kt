@@ -47,6 +47,10 @@ import com.example.cryptoapp.R
 import com.example.cryptoapp.ui.navigation.NavigationRoutes
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginState
 import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 2ad0bd1 (change project name and add auth google)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,6 +178,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 Text("Sign In")
             }
             Button(
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
                 onClick = {
 
@@ -182,6 +187,9 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
 =======
                 onClick = { },
 >>>>>>> parent of 2ad0bd1 (change project name and add auth google):app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
+=======
+                onClick = { },
+>>>>>>> parent of 2ad0bd1 (change project name and add auth google)
                 modifier = Modifier
                     .padding(horizontal = 80.dp, vertical = 8.dp)
                     .fillMaxWidth()

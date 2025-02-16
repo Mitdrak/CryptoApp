@@ -38,6 +38,7 @@ class LoginViewModel @Inject constructor(
 
     fun signIn() {
         viewModelScope.launch {
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginViewModel.kt
             val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)
 
@@ -45,6 +46,10 @@ class LoginViewModel @Inject constructor(
             /*val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)*/
             val response = signInUseCase("sergio.acs@hotmail.com", "123456")
 >>>>>>> parent of 2ad0bd1 (change project name and add auth google):app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginViewModel.kt
+=======
+            /*val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)*/
+            val response = signInUseCase("sergio.acs@hotmail.com", "123456")
+>>>>>>> parent of 2ad0bd1 (change project name and add auth google)
             if (response) {
                 loginState.value = loginState.value.copy(isLoginSuccessful = true)
             } else {
@@ -53,6 +58,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD:app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginViewModel.kt
     fun signInWithGoogle(activity: Activity) {
         viewModelScope.launch {
@@ -67,6 +73,8 @@ class LoginViewModel @Inject constructor(
 
 =======
 >>>>>>> parent of 2ad0bd1 (change project name and add auth google):app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginViewModel.kt
+=======
+>>>>>>> parent of 2ad0bd1 (change project name and add auth google)
     fun onUiEvent(loginUiEvent: LoginUiEvent) {
         when (loginUiEvent) {
             is LoginUiEvent.EmailOrMobileChanged -> {
