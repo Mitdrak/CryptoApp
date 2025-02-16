@@ -1,0 +1,370 @@
+package com.example.cryptoapp.ui.screen.unauthenticated.login
+
+import android.widget.Space
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.cryptoapp.R
+import com.example.cryptoapp.ui.navigation.NavigationRoutes
+import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginState
+import com.example.cryptoapp.ui.screen.unauthenticated.login.state.LoginUiEvent
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
+
+    val loginState by remember {
+        viewModel.loginState
+    }
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+
+    LaunchedEffect(isLoggedIn) {
+        if (isLoggedIn == true) {
+            onNavigateToHome()
+        }
+    }
+    if (loginState.isLoginSuccessful) {
+        onNavigateToHome()
+    }
+    if (isLoggedIn == null) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    } else if (isLoggedIn == false) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(23, 24, 26)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Welcome Back!",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp
+            )
+            Text(
+                text = "Please sign in to continue",
+                modifier = Modifier.padding(top = 16.dp),
+                color = Color(142, 142, 142, 255),
+                fontSize = 15.sp
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                OutlinedTextField(
+                    value = loginState.emailOrMobile,
+                    onValueChange = { viewModel.onUiEvent(LoginUiEvent.EmailOrMobileChanged(it)) },
+                    placeholder = { Text("Email") },
+                    singleLine = false,
+                    modifier = Modifier
+                        .padding(horizontal = 25.dp)
+                        .border(
+                            width = 3.dp,
+                            color = Color(34, 37, 44),
+                            shape = RoundedCornerShape(25.dp),
+                        )
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedPlaceholderColor = Color(142, 142, 142, 255),
+                        containerColor = Color(34, 37, 44),
+                        unfocusedLabelColor = Color(173, 173, 173, 255),
+                    ),
+                    textStyle = TextStyle(color = Color(173, 173, 173, 255)),
+                    shape = RoundedCornerShape(25.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    value = loginState.password,
+                    onValueChange = { viewModel.onUiEvent(LoginUiEvent.PasswordChanged(it)) },
+                    placeholder = { Text("Password") },
+                    singleLine = false,
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier
+                        .padding(horizontal = 25.dp)
+                        .border(
+                            width = 3.dp,
+                            color = Color(34, 37, 44),
+                            shape = RoundedCornerShape(25.dp),
+                        )
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedPlaceholderColor = Color(142, 142, 142, 255),
+                        containerColor = Color(34, 37, 44),
+                        unfocusedLabelColor = Color(173, 173, 173, 255),
+                    ),
+                    textStyle = TextStyle(color = Color(173, 173, 173, 255)),
+                    shape = RoundedCornerShape(25.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = {
+                    viewModel.signIn()
+                },
+                modifier = Modifier
+                    .padding(horizontal = 80.dp, vertical = 8.dp)
+                    .fillMaxWidth()
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp),
+                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(75,93,255), contentColor = Color.White
+                )
+            ) {
+                Text("Sign In")
+            }
+            Button(
+<<<<<<< HEAD:app/src/main/java/com/example/cryptosocket/ui/screen/unauthenticated/login/LoginScreen.kt
+                onClick = {
+
+                    viewModel.signInWithGoogle(activity)
+                },
+=======
+                onClick = { },
+>>>>>>> parent of 2ad0bd1 (change project name and add auth google):app/src/main/java/com/example/cryptoapp/ui/screen/unauthenticated/login/LoginScreen.kt
+                modifier = Modifier
+                    .padding(horizontal = 80.dp, vertical = 8.dp)
+                    .fillMaxWidth()
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp),
+                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White, contentColor = Color(34, 37, 44)
+                )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.google_icon),
+                    contentDescription = "Google",
+                    modifier = Modifier.padding(end = 8.dp).size(24.dp)
+                )
+                Text("Sign In With Google")
+            }
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .padding(horizontal = 80.dp, vertical = 8.dp)
+                    .fillMaxWidth()
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp),
+                    ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(34, 37, 44), contentColor = Color.White
+                )
+            ) {
+                Text("Sign In With Facebook")
+            }
+            Spacer(modifier = Modifier.weight(1f))
+        }
+    }
+
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun logScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(23, 24, 26)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Welcome Back!",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp
+        )
+        Text(
+            text = "Please sign in to continue",
+            modifier = Modifier.padding(top = 16.dp),
+            color = Color(142, 142, 142, 255),
+            fontSize = 15.sp
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            OutlinedTextField(
+                value = "",
+                onValueChange = { },
+                placeholder = { Text("Email") },
+                singleLine = false,
+                modifier = Modifier
+                    .padding(horizontal = 25.dp)
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp),
+                    )
+                    .fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedPlaceholderColor = Color(142, 142, 142, 255),
+                    containerColor = Color(34, 37, 44),
+                    unfocusedLabelColor = Color(173, 173, 173, 255),
+                ),
+                textStyle = TextStyle(color = Color(173, 173, 173, 255)),
+                shape = RoundedCornerShape(25.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            OutlinedTextField(
+                value = "",
+                onValueChange = { },
+                placeholder = { Text("Password") },
+                singleLine = false,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier
+                    .padding(horizontal = 25.dp)
+                    .border(
+                        width = 3.dp,
+                        color = Color(34, 37, 44),
+                        shape = RoundedCornerShape(25.dp),
+                    )
+                    .fillMaxWidth(),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedPlaceholderColor = Color(142, 142, 142, 255),
+                    containerColor = Color(34, 37, 44),
+                    unfocusedLabelColor = Color(173, 173, 173, 255),
+                ),
+                textStyle = TextStyle(color = Color(173, 173, 173, 255)),
+                shape = RoundedCornerShape(25.dp)
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .padding(horizontal = 80.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .border(
+                    width = 3.dp,
+                    color = Color(34, 37, 44),
+                    shape = RoundedCornerShape(25.dp),
+                ),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(75,93,255), contentColor = Color.White
+            )
+        ) {
+            Text("Sign In")
+        }
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .padding(horizontal = 80.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .border(
+                    width = 3.dp,
+                    color = Color(34, 37, 44),
+                    shape = RoundedCornerShape(25.dp),
+                ),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White, contentColor = Color(34, 37, 44)
+            )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.google_icon),
+                contentDescription = "Google",
+                modifier = Modifier.padding(end = 8.dp).size(24.dp)
+            )
+            Text("Sign In With Google")
+        }
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .padding(horizontal = 80.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .border(
+                    width = 3.dp,
+                    color = Color(34, 37, 44),
+                    shape = RoundedCornerShape(25.dp),
+                ),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(34, 37, 44), contentColor = Color.White
+            )
+        ) {
+            Text("Sign In With Facebook")
+        }
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview
+@Composable
+fun PreviewLoginScreen() {
+    logScreen()
+}
