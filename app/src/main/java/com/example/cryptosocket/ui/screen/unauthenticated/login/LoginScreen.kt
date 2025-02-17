@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,14 +15,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,26 +49,38 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
     val loginState by remember {
         viewModel.loginState
     }
-    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     val context = LocalContext.current
     val activity = context as? Activity ?: return  // ✅ Ensure we pass an Activity
+    val snackbarHostState = remember { SnackbarHostState() }
 
-
-    LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn == true) {
-            onNavigateToHome()
+    LaunchedEffect(loginState.errorState) {
+        if (loginState.errorState.generalErrorState.hasError) {
+            snackbarHostState.showSnackbar("An error occurred: ${loginState.errorState.generalErrorState.errorMessage}")
+            viewModel.resetLoginState()
+        } else if (loginState.errorState.emptyFieldErrorState.hasError) {
+            snackbarHostState.showSnackbar("Please fill all fields")
+            viewModel.resetLoginState()
         }
     }
     if (loginState.isLoginSuccessful) {
         onNavigateToHome()
     }
-    if (isLoggedIn == null) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-    } else if (isLoggedIn == false) {
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            ) {
+                Snackbar(
+                    snackbarData = it, containerColor = Color.Red, contentColor = Color
+                        .White
+                )
+            }
+        },
+    ) {
         Column(
             modifier = Modifier
+                .padding(it)
                 .fillMaxSize()
                 .background(Color(23, 24, 26)),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -147,7 +160,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    viewModel.signIn()
+                    viewModel.onUiEvent(LoginUiEvent.Submit)
                 },
                 modifier = Modifier
                     .padding(horizontal = 80.dp, vertical = 8.dp)
@@ -158,8 +171,14 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                         shape = RoundedCornerShape(25.dp),
                     ),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(75, 93, 255), contentColor = Color.White
-                )
+                    containerColor = if (loginState.isLoading) Color.Red else Color(
+                        75,
+                        93,
+                        255
+                    ),
+                    contentColor = Color.White
+                ),
+                enabled = !loginState.isLoading
             ) {
                 Text("Sign In")
             }
@@ -178,7 +197,8 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                     ),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White, contentColor = Color(34, 37, 44)
-                )
+                ),
+                enabled = !loginState.isLoading
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.google_icon),

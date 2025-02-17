@@ -15,7 +15,7 @@ interface UserRepository {
 @Singleton
 class UserRepositoryImpl @Inject constructor(private val dataStoreManager: DataStoreManager) :
     UserRepository {
-        
+
     override val userData: Flow<UserData?> = dataStoreManager.userData
 
 
@@ -24,6 +24,6 @@ class UserRepositoryImpl @Inject constructor(private val dataStoreManager: DataS
     }
 
     override suspend fun clearUserData() {
-        TODO()
+        dataStoreManager.clearGoogleCredentials()
     }
 }

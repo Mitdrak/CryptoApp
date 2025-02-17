@@ -69,6 +69,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             closeWebSocket()
             signOutUseCase()
+            userRepository.clearUserData()
             _signOutState.value = true
         }
     }
