@@ -56,6 +56,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.cryptosocket.R
 import com.example.cryptosocket.data.model.dto.CryptoAsset
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
@@ -65,7 +66,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    onNavigateToLogin: () -> Unit, onNavigateToProfile: () -> Unit, viewModel:
+    HomeViewModel =
+        hiltViewModel
+            ()
+) {
     val search by viewModel.searchQuery.collectAsState()
     val filteredCryptoAssets by viewModel.filteredList.collectAsState()
     val isRfreshing by viewModel.isRefreshing.collectAsState()
@@ -90,13 +96,35 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltVie
                         .padding(horizontal = 16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = userData?.name ?: "User",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = Color.White
-                    )
+                    Row(modifier = Modifier.padding(8.dp)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.bitcoin_btc_logo),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(50.dp)
+                        )
+                        Text(
+                            /*text = userData?.name ?: "User",*/
+                            text = "Sergio Carriel García",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White
+                        )
+                    }
                     HorizontalDivider()
+                    NavigationDrawerItem(label = {
+                        Text(
+                            "Edit profile",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    },
+                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
+                        selected = false,
+                        onClick = {
+                            onNavigateToProfile()
+                        })
+
                     NavigationDrawerItem(label = {
                         Text(
                             "Sign Out",
@@ -109,32 +137,7 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltVie
                         onClick = {
                             viewModel.signOut()
                         })
-                    NavigationDrawerItem(label = {
-                        Text(
-                            "Item 2",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    },
-                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                        selected = false,
-                        onClick = {
-                            /*viewModel.signOut()
-                            onNavigateToLogin()*/
-                        })
-                    NavigationDrawerItem(label = {
-                        Text(
-                            "Item 3",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    },
-                        colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                        selected = false,
-                        onClick = {
-                            /*viewModel.signOut()
-                            onNavigateToLogin()*/
-                        })
+
                 }
             }
         },
@@ -150,7 +153,7 @@ fun HomeScreen(onNavigateToLogin: () -> Unit, viewModel: HomeViewModel = hiltVie
                 )
             }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = Color(21, 21, 21),
-            ), actions = {
+            ), navigationIcon = {
                 IconButton(onClick = {
                     /*viewModel.signOut()
                     onNavigateToLogin()*/

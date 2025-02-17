@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.cryptosocket.ui.screen.authenticated.home.HomeScreen
+import com.example.cryptosocket.ui.screen.authenticated.profile.ProfileScreen
 import com.example.cryptosocket.ui.screen.unauthenticated.login.LoginScreen
 
 fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
@@ -23,7 +24,26 @@ fun NavGraphBuilder.authenticatedGraph(navController: NavController) {
                         inclusive = true
                     }
                 }
-            })
+            },
+                onNavigateToProfile = {
+                    navController.navigate(NavigationRoutes.Authenticated.Profile.route) {
+                        popUpTo(route = NavigationRoutes.Authenticated.NavigationRoute.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+        composable(route = NavigationRoutes.Authenticated.Profile.route) {
+            ProfileScreen(
+                onNavigateToHome = {
+                    navController.navigate(NavigationRoutes.Authenticated.Home.route) {
+                        popUpTo(route = NavigationRoutes.Authenticated.NavigationRoute.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -36,11 +56,13 @@ fun NavGraphBuilder.unauthenticatedGraph(navController: NavController) {
         startDestination = NavigationRoutes.Unauthenticated.Login.route
     ) {
         //Menu
-        composable(route = NavigationRoutes.Unauthenticated.Login.route, enterTransition = {
-            return@composable slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.End, tween(700)
-            )
-        },
+        composable(
+            route = NavigationRoutes.Unauthenticated.Login.route,
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End, tween(700)
+                )
+            },
             exitTransition = {
                 return@composable slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Start, tween(700)
