@@ -16,7 +16,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -29,12 +28,18 @@ class AuthRepositoryImpl @Inject constructor(
     private val credentialManager: CredentialManager,
     private val dataStoreManager: DataStoreManager
 ) : AuthRepository {
-    
+
 
     override suspend fun signIn(email: String, password: String): Boolean {
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
             val user = firebaseAuth.currentUser
+            if (user != null) {
+                dataStoreManager.saveUserName(user.displayName!!)
+                dataStoreManager.saveUserEmail(user.email!!)
+                dataStoreManager.saveUserPhotoUrl(user.photoUrl.toString())
+            }
+            /*val user = firebaseAuth.currentUser
             user!!.updateProfile(userProfileChangeRequest {
                 displayName = "Sergio"
             }).addOnCompleteListener {
@@ -46,7 +51,7 @@ class AuthRepositoryImpl @Inject constructor(
                 } else {
                     println("User not updated")
                 }
-            }.await()
+            }.await()*/
             true
         } catch (e: Exception) {
             // Log the error or handle it appropriately

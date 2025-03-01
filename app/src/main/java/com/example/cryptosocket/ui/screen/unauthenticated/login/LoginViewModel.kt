@@ -49,6 +49,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             /*val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)*/
             val response = signInUseCase("sergio.acs@hotmail.com", "123456")
+            /*val response = signInUseCase("sacarriels@pucesd.edu.ec", "123456")*/
 
             if (response) {
                 loginState.value =

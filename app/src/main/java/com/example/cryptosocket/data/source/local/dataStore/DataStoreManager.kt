@@ -51,6 +51,25 @@ class DataStoreManager @Inject constructor(
         }
     }
 
+    suspend fun saveUserName(name: String) {
+        context.dataStore.edit { preferences ->
+            preferences[GOOGLE_DISPLAY_NAME_KEY] = name
+        }
+    }
+
+    suspend fun saveUserEmail(email: String) {
+        context.dataStore.edit { preferences ->
+            preferences[GOOGLE_EMAIL_KEY] = email
+        }
+    }
+
+    suspend fun saveUserPhotoUrl(photoUrl: String) {
+        context.dataStore.edit { preferences ->
+            preferences[GOOGLE_PHOTO_URL_KEY] = photoUrl
+        }
+    }
+
+
     suspend fun clearGoogleCredentials() {
         context.dataStore.edit { preferences ->
             preferences.remove(GOOGLE_DISPLAY_NAME_KEY)

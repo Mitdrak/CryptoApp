@@ -51,11 +51,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.example.cryptosocket.R
 import com.example.cryptosocket.data.model.dto.CryptoAsset
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -104,8 +107,7 @@ fun HomeScreen(
                             modifier = Modifier.size(50.dp)
                         )
                         Text(
-                            /*text = userData?.name ?: "User",*/
-                            text = "Sergio Carriel García",
+                            text = userData?.name ?: "User",
                             modifier = Modifier.padding(16.dp),
                             style = MaterialTheme.typography.titleLarge,
                             color = Color.White
@@ -122,6 +124,7 @@ fun HomeScreen(
                         colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
                         selected = false,
                         onClick = {
+                            viewModel.closeWebSocket()
                             onNavigateToProfile()
                         })
 
@@ -165,7 +168,12 @@ fun HomeScreen(
                         }
                     }
                 }) {
-                    Icon(imageVector = Icons.Filled.Menu, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Filled.Menu,
+                        tint = Color.White,
+                        contentDescription =
+                        null
+                    )
                 }
             })
         }) { innerPadding ->
@@ -233,6 +241,7 @@ fun HomeScreen(
 fun MessageItem(message: CryptoAsset) {
     var previousPrice by remember { mutableStateOf(message.price) }
     var highlightColor by remember { mutableStateOf(Color.Gray) }
+    val imageVector = ImageVector.vectorResource(id = message.idIcon)
 
     LaunchedEffect(message.price) {
         highlightColor = when {
@@ -260,9 +269,15 @@ fun MessageItem(message: CryptoAsset) {
         Row(
             modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            /*Image(
                 painter = painterResource(id = message.idIcon),
-                contentDescription = null,
+                contentDescription = "Crypto Icon ${message.name}",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(50.dp)
+            )*/
+            AsyncImage(
+                model = message.idIcon,
+                contentDescription = "Crypto Icon ${message.name}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(50.dp)
             )

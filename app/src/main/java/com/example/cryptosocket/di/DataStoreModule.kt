@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.cryptosocket.data.source.local.dataStore.DataStoreManager
 import com.example.cryptosocket.domain.repository.UserRepository
 import com.example.cryptosocket.domain.repository.UserRepositoryImpl
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,10 @@ object DataStoreModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(dataStoreManager: DataStoreManager): UserRepository {
-        return UserRepositoryImpl(dataStoreManager)
+    fun provideUserRepository(
+        dataStoreManager: DataStoreManager,
+        firebaseAuth: FirebaseAuth
+    ): UserRepository {
+        return UserRepositoryImpl(dataStoreManager, firebaseAuth)
     }
 }

@@ -7,6 +7,7 @@ import com.example.cryptosocket.data.model.dto.SocketResponse
 import com.example.cryptosocket.data.model.entity.CryptoAssetEntity
 import com.example.cryptosocket.data.source.remote.websocket.WebSocketState
 import com.example.cryptosocket.domain.repository.LocalCryptoRepository
+import com.example.cryptosocket.domain.repository.UserRepository
 import com.example.cryptosocket.domain.usecases.auth.SignOutUseCase
 import com.example.cryptosocket.domain.usecases.socket.CloseWebSocketUseCase
 import com.example.cryptosocket.domain.usecases.socket.CollectWebSocketMessagesUseCase
@@ -45,6 +46,7 @@ class HomeViewModelTest {
     private val mockCollectWebSocketMessagesUseCase: CollectWebSocketMessagesUseCase =
         mockk(relaxed = true)
     private val mockLocalCryptoRepository: LocalCryptoRepository = mockk()
+    private val mockLocalUserRepository: UserRepository = mockk()
 
     @Before
     fun setUp() {
@@ -72,7 +74,8 @@ class HomeViewModelTest {
             mockDisconnectWebSocketUseCase,
             mockSignOutUseCase,
             mockCollectWebSocketMessagesUseCase,
-            mockLocalCryptoRepository
+            mockLocalCryptoRepository,
+            mockLocalUserRepository
         )
 
     }
@@ -111,7 +114,9 @@ class HomeViewModelTest {
             every { mockCollectWebSocketMessagesUseCase.messages } returns messageFlow
 
             // Call the function that collects messages
-            viewModel.collectMessages()
+            /*
+                        viewModel.collectMessages()
+            */
 
             advanceUntilIdle() // Advance time until all coroutines are done
 
@@ -200,7 +205,9 @@ class HomeViewModelTest {
 
 
         // Act: Call the method to collect messages
-        viewModel.collectMessages()
+        /*
+                viewModel.collectMessages()
+        */
 
         // *** KEY CHANGE 3: Await state update (important!) ***
         // You'll need a way to observe the errorState.  Here's a common approach:

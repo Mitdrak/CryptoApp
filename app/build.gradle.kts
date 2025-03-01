@@ -83,6 +83,9 @@ dependencies {
     // Swipe Refresh Layout
     implementation(libs.accompanist.swiperefresh)
 
+    //Coil
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
