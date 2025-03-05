@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -45,7 +46,12 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     fun onUiEvent(uiEvent: ProfileUiEvent) {
         when (uiEvent) {
             is ProfileUiEvent.NameChanged -> {
-                _uiState.value = _uiState.value.copy(name = uiEvent.inputValue)
+                /*_uiState.value = _uiState.value.copy(name = uiEvent.inputValue)*/
+                _uiState.update {
+                    it.copy(
+                        name = uiEvent.inputValue,
+                    )
+                }
             }
 
             is ProfileUiEvent.EmailChanged -> {

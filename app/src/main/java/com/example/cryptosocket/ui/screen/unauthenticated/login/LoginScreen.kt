@@ -62,6 +62,12 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
             viewModel.resetLoginState()
         }
     }
+    LaunchedEffect(loginState.isSignUpSuccessful) {
+        if (loginState.isSignUpSuccessful) {
+            snackbarHostState.showSnackbar("Sign up successful")
+            viewModel.resetLoginState()
+        }
+    }
     if (loginState.isLoginSuccessful) {
         onNavigateToHome()
     }
@@ -72,7 +78,9 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 hostState = snackbarHostState
             ) {
                 Snackbar(
-                    snackbarData = it, containerColor = Color.Red, contentColor = Color
+                    snackbarData = it,
+                    containerColor = if (loginState.isSignUpSuccessful) Color.Green else Color.Red,
+                    contentColor = Color
                         .White
                 )
             }
@@ -180,7 +188,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 ),
                 enabled = !loginState.isLoading
             ) {
-                Text("Sign In")
+                Text("Login")
             }
             Button(
                 onClick = {
@@ -210,7 +218,9 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                 Text("Sign In With Google")
             }
             Button(
-                onClick = { },
+                onClick = {
+                    viewModel.onUiEvent(LoginUiEvent.SignUp)
+                },
                 modifier = Modifier
                     .padding(horizontal = 80.dp, vertical = 8.dp)
                     .fillMaxWidth()
@@ -223,7 +233,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
                     containerColor = Color(34, 37, 44), contentColor = Color.White
                 )
             ) {
-                Text("Sign In With Facebook")
+                Text("Sign Up")
             }
             Spacer(modifier = Modifier.weight(1f))
         }

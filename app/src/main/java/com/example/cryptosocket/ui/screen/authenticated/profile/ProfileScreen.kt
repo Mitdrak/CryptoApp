@@ -174,7 +174,7 @@ fun ProfileScreen(onNavigateToHome: () -> Unit, viewModel: ProfileViewModel = hi
                 value = uiState.name ?: "",
                 readOnly = !uiState.isUpdatingProfile,
                 onValueChange = { viewModel.onUiEvent(ProfileUiEvent.NameChanged(it)) },
-                placeholder = { Text("Sergio Carriel") },
+                placeholder = { Text("Example Name") },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedLabelColor = Color.White, unfocusedTextColor =
                     Color.White, focusedTextColor = Color.White

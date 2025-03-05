@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseUser
 interface AuthRepository {
     suspend fun signIn(email: String, password: String): Boolean
     suspend fun signInWithGoogle(activity: Activity): Boolean
-    suspend fun signUp(email: String, password: String): Boolean
+    suspend fun signUp(email: String, password: String): Result<String>
     suspend fun signOut()
     suspend fun getCurrentUser(): FirebaseUser?
 }

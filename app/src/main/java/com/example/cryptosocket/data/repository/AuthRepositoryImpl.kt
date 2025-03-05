@@ -117,15 +117,34 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun signUp(email: String, password: String): Boolean {
+    override suspend fun signUp(email: String, password: String): Result<String> {
         return try {
-            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            true
+            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    println("User created")
+                } else {
+                    println("User not created")
+                }
+            }.await()
+            /*val user = firebaseAuth.currentUser
+            if (user != null) {
+                dataStoreManager.saveUserName(user.displayName!!)
+                dataStoreManager.saveUserEmail(user.email!!)
+                dataStoreManager.saveUserPhotoUrl(user.photoUrl.toString())
+            }*/
+            signOut()
+            Result.success("User created successfully")
         } catch (e: Exception) {
             // Log the error or handle it appropriately
             println("Sign up failed: ${e.message}")
-            false
+            val message = extractErrorMessage(e.message ?: "Unknown error")
+            Result.failure(Exception(message))
         }
+    }
+
+    private fun extractErrorMessage(errorMessage: String): String {
+        val regex = "\\[([^]]+)\\]".toRegex() // Regex pattern to match text inside []
+        return regex.find(errorMessage)?.groupValues?.get(1) ?: errorMessage
     }
 
     override suspend fun signOut() {

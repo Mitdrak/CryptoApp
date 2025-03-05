@@ -237,6 +237,7 @@ fun HomeScreen(
 
 }
 
+
 @Composable
 fun MessageItem(message: CryptoAsset) {
     var previousPrice by remember { mutableStateOf(message.price) }

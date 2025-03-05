@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cryptosocket.domain.usecases.auth.GetCurrentUserUseCase
 import com.example.cryptosocket.domain.usecases.auth.SignInGoogleUseCase
 import com.example.cryptosocket.domain.usecases.auth.SignInUseCase
+import com.example.cryptosocket.domain.usecases.auth.SignUpUseCase
 import com.example.cryptosocket.ui.screen.unauthenticated.login.state.LoginState
 import com.example.cryptosocket.ui.screen.unauthenticated.login.state.LoginUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
     private val signInGoogleUseCase: SignInGoogleUseCase,
 ) : ViewModel() {
     var loginState = mutableStateOf(LoginState())
@@ -31,6 +33,7 @@ class LoginViewModel @Inject constructor(
         loginState.value = loginState.value.copy(
             isLoading = false,
             isLoginSuccessful = false,
+            isSignUpSuccessful = false,
             errorState = LoginState().errorState
         )
     }
@@ -47,10 +50,7 @@ class LoginViewModel @Inject constructor(
 
     fun signIn() {
         viewModelScope.launch {
-            /*val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)*/
-            val response = signInUseCase("sergio.acs@hotmail.com", "123456")
-            /*val response = signInUseCase("sacarriels@pucesd.edu.ec", "123456")*/
-
+            val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)
             if (response) {
                 loginState.value =
                     loginState.value.copy(isLoginSuccessful = true, isLoading = false)
@@ -64,6 +64,26 @@ class LoginViewModel @Inject constructor(
                     ), isLoading = false
                 )
                 println("Login failed")
+            }
+        }
+    }
+
+    fun signUp() {
+        viewModelScope.launch {
+            val response = signUpUseCase(loginState.value.emailOrMobile, loginState.value.password)
+            if (response.isSuccess) {
+                loginState.value =
+                    loginState.value.copy(isSignUpSuccessful = true, isLoading = false)
+            } else if (response.isFailure) {
+                loginState.value = loginState.value.copy(
+                    errorState = loginState.value.errorState.copy(
+                        generalErrorState = loginState.value.errorState.generalErrorState.copy(
+                            hasError = true,
+                            errorMessage = response.exceptionOrNull()?.message ?: "Sign up failed"
+                        ),
+                    ), isLoading = false
+                )
+                println("SignUp failed")
             }
         }
     }
@@ -105,7 +125,6 @@ class LoginViewModel @Inject constructor(
 
             LoginUiEvent.Submit -> {
                 loginState.value = loginState.value.copy(isLoading = true)
-                signIn()
                 if (loginState.value.emailOrMobile.isEmpty() || loginState.value.password.isEmpty()) {
                     loginState.value = loginState.value.copy(
                         errorState = loginState.value.errorState.copy(
@@ -119,6 +138,24 @@ class LoginViewModel @Inject constructor(
                     return
                 } else {
                     signIn()
+                }
+            }
+
+            LoginUiEvent.SignUp -> {
+                loginState.value = loginState.value.copy(isLoading = true)
+                if (loginState.value.emailOrMobile.isEmpty() || loginState.value.password.isEmpty()) {
+                    loginState.value = loginState.value.copy(
+                        errorState = loginState.value.errorState.copy(
+                            emptyFieldErrorState = loginState.value.errorState.emptyFieldErrorState.copy(
+                                hasError = true,
+                                errorMessage = "Please fill in all fields"
+                            )
+                        ),
+                        isLoading = false
+                    )
+                    return
+                } else {
+                    signUp()
                 }
             }
         }
