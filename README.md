@@ -32,7 +32,7 @@ CryptoTracker is an Android application built with **Kotlin** and **Jetpack Comp
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/CryptoTracker.git
+   git clone https://github.com/yourusername/CryptoApp.git
    ```
 2. Open the project in **Android Studio**.
 3. Connect your Firebase project:
@@ -60,9 +60,7 @@ The app uses the **WhiteBit WebSocket API** for real-time cryptocurrency price u
 ---
 
 ## 📷 Screenshots
-Login Screen
 ![image](https://github.com/user-attachments/assets/f2aa18b1-bd61-44c0-8945-3b05148b652e)
-Home Screen
 ![image](https://github.com/user-attachments/assets/b40e6bbb-b57f-411a-a6b6-d06047702b36)
 
 ---
@@ -75,5 +73,5 @@ Feel free to fork the project and submit PRs! 🚀
 
 ## 📜 License
 
-MIT License © 2025 Your Name
+MIT License © 2025 Mitdrak
 
