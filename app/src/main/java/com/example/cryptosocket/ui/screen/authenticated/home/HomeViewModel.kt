@@ -25,7 +25,17 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-
+/**
+ * ViewModel for the home screen.
+ *
+ * @property startWebSocketUseCase Use case to start the WebSocket connection.
+ * @property closeWebSocketUseCase Use case to close the WebSocket connection.
+ * @property disconnectWebSocketUseCase Use case to disconnect the WebSocket connection.
+ * @property signOutUseCase Use case to sign out the user.
+ * @property collectMessagesUseCase Use case to collect WebSocket messages.
+ * @property localCryptoRepository Repository for local crypto data.
+ * @property userRepository Repository for user data.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val startWebSocketUseCase: StartWebSocketUseCase,
@@ -64,7 +74,9 @@ class HomeViewModel @Inject constructor(
         null
     )
 
-
+    /**
+     * Signs out the user.
+     */
     fun signOut() {
         viewModelScope.launch {
             closeWebSocket()
@@ -84,10 +96,18 @@ class HomeViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    /**
+     * Updates the search query.
+     *
+     * @param query The new search query.
+     */
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
     }
 
+    /**
+     * Retries the WebSocket connection.
+     */
     fun retryWebSocketConnection() {
         viewModelScope.launch {
             _isRefreshing.value = true
@@ -97,6 +117,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Performs the initial setup.
+     */
     fun firstTimeSetup() {
         viewModelScope.launch {
             localCryptoRepository.initializeDatabaseIfEmpty()
@@ -106,7 +129,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Loads the crypto assets from the local repository.
+     */
     fun loadCryptoAssets() {
         viewModelScope.launch {
             try {
@@ -129,6 +154,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Collects messages from the WebSocket.
+     */
     private fun collectMessages() {  // Make private as it's an internal function
         viewModelScope.launch {
             collectMessagesUseCase.messages.collect { state ->  // Collect WebSocketState directly
@@ -166,6 +194,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates the crypto prices based on the received WebSocket message.
+     *
+     * @param message The received WebSocket message.
+     */
     private fun updateCryptoPrices(message: WebSocketState.MessageReceived) {
         viewModelScope.launch { // Launch in viewModelScope for database update
             try {
@@ -186,7 +219,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Connects to the WebSocket.
+     */
     fun connectWebSocket() {
         viewModelScope.launch { // Launch in viewModelScope
             _webSocketState.value = WebSocketState.Connecting // Indicate connecting state
@@ -195,6 +230,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Closes the WebSocket connection.
+     */
     fun closeWebSocket() {
         println("Closing WebSocket connection en ViewModel")
         viewModelScope.launch { // Launch in viewModelScope
@@ -204,6 +242,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Disconnects the WebSocket connection.
+     */
     fun disconnectWebSocket() {
         viewModelScope.launch {
             _webSocketState.value = WebSocketState.Disconnecting
@@ -212,6 +253,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Called when the ViewModel is cleared.
+     */
     override fun onCleared() {
         closeWebSocket()
         super.onCleared()

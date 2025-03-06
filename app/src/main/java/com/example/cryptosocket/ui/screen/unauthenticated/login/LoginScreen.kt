@@ -41,7 +41,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.cryptosocket.R
 import com.example.cryptosocket.ui.screen.unauthenticated.login.state.LoginUiEvent
 
-
+/**
+ * Composable function for the login screen.
+ *
+ * @param onNavigateToHome Callback function to navigate to the home screen.
+ * @param viewModel The ViewModel for the login screen, defaulting to a HiltViewModel.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltViewModel()) {
@@ -53,6 +58,7 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
     val activity = context as? Activity ?: return  // ✅ Ensure we pass an Activity
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Show snackbar messages based on error states
     LaunchedEffect(loginState.errorState) {
         if (loginState.errorState.generalErrorState.hasError) {
             snackbarHostState.showSnackbar("An error occurred: ${loginState.errorState.generalErrorState.errorMessage}")
@@ -62,12 +68,14 @@ fun LoginScreen(onNavigateToHome: () -> Unit, viewModel: LoginViewModel = hiltVi
             viewModel.resetLoginState()
         }
     }
+    // Show snackbar message on successful sign-up
     LaunchedEffect(loginState.isSignUpSuccessful) {
         if (loginState.isSignUpSuccessful) {
             snackbarHostState.showSnackbar("Sign up successful")
             viewModel.resetLoginState()
         }
     }
+    // Navigate to home screen if login is successful
     if (loginState.isLoginSuccessful) {
         onNavigateToHome()
     }

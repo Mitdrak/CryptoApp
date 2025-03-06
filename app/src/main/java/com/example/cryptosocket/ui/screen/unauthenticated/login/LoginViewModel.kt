@@ -14,7 +14,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
+/**
+ * ViewModel for the login screen.
+ *
+ * @property getCurrentUserUseCase Use case to get the current user.
+ * @property signInUseCase Use case to sign in.
+ * @property signUpUseCase Use case to sign up.
+ * @property signInGoogleUseCase Use case to sign in with Google.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
@@ -29,6 +36,9 @@ class LoginViewModel @Inject constructor(
         checkIfUserIsLoggedIn()
     }
 
+    /**
+     * Resets the login state to its initial values.
+     */
     fun resetLoginState() {
         loginState.value = loginState.value.copy(
             isLoading = false,
@@ -38,6 +48,9 @@ class LoginViewModel @Inject constructor(
         )
     }
 
+    /**
+     * Checks if the user is already logged in.
+     */
     private fun checkIfUserIsLoggedIn() {
         viewModelScope.launch {
             loginState.value = loginState.value.copy(isLoading = true)
@@ -48,6 +61,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Signs in the user with the provided email or mobile and password.
+     */
     fun signIn() {
         viewModelScope.launch {
             val response = signInUseCase(loginState.value.emailOrMobile, loginState.value.password)
@@ -68,6 +84,9 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Signs up the user with the provided email or mobile and password.
+     */
     fun signUp() {
         viewModelScope.launch {
             val response = signUpUseCase(loginState.value.emailOrMobile, loginState.value.password)
@@ -88,7 +107,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Signs in the user with Google.
+     *
+     * @param activity The current activity.
+     */
     fun signInWithGoogle(activity: Activity) {
         viewModelScope.launch {
             loginState.value = loginState.value.copy(isLoading = true)
@@ -109,6 +132,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Handles UI events for the login screen.
+     *
+     * @param loginUiEvent The UI event to handle.
+     */
     fun onUiEvent(loginUiEvent: LoginUiEvent) {
         when (loginUiEvent) {
             is LoginUiEvent.EmailOrMobileChanged -> {

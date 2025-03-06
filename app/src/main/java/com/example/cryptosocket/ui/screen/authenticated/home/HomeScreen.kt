@@ -66,7 +66,13 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
+/**
+ * Composable function for the home screen.
+ *
+ * @param onNavigateToLogin Callback function to navigate to the login screen.
+ * @param onNavigateToProfile Callback function to navigate to the profile screen.
+ * @param viewModel The ViewModel for the home screen, defaulting to a HiltViewModel.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -83,6 +89,7 @@ fun HomeScreen(
     val signOutState by viewModel.signOutState.collectAsState()
     val userData by viewModel.userData.collectAsState()
 
+    // Navigate to login screen if sign out is successful
     LaunchedEffect(signOutState) {
         if (signOutState) {
             onNavigateToLogin()
@@ -237,13 +244,18 @@ fun HomeScreen(
 
 }
 
-
+/**
+ * Composable function to display a crypto asset item.
+ *
+ * @param message The crypto asset to display.
+ */
 @Composable
 fun MessageItem(message: CryptoAsset) {
     var previousPrice by remember { mutableStateOf(message.price) }
     var highlightColor by remember { mutableStateOf(Color.Gray) }
     val imageVector = ImageVector.vectorResource(id = message.idIcon)
 
+    // Update highlight color based on price change
     LaunchedEffect(message.price) {
         highlightColor = when {
             message.price > previousPrice -> Color(0xFF006D00)
@@ -270,12 +282,6 @@ fun MessageItem(message: CryptoAsset) {
         Row(
             modifier = Modifier.padding(5.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            /*Image(
-                painter = painterResource(id = message.idIcon),
-                contentDescription = "Crypto Icon ${message.name}",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(50.dp)
-            )*/
             AsyncImage(
                 model = message.idIcon,
                 contentDescription = "Crypto Icon ${message.name}",

@@ -32,33 +32,26 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signIn(email: String, password: String): Boolean {
         return try {
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
-            val user = firebaseAuth.currentUser
+            val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            val user = result.user
+
             if (user != null) {
-                dataStoreManager.saveUserName(user.displayName!!)
-                dataStoreManager.saveUserEmail(user.email!!)
-                dataStoreManager.saveUserPhotoUrl(user.photoUrl.toString())
+                user.displayName?.let { dataStoreManager.saveUserName(it) }
+                user.email?.let { dataStoreManager.saveUserEmail(it) }
+                user.photoUrl?.toString()?.let { dataStoreManager.saveUserPhotoUrl(it) }
+
+                println("User signed in")
+                true // ✅ Successful sign-in
+            } else {
+                println("User not signed in")
+                false // ✅ Return false if user is null
             }
-            /*val user = firebaseAuth.currentUser
-            user!!.updateProfile(userProfileChangeRequest {
-                displayName = "Sergio"
-            }).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    println("User updated")
-                    if (user != null) {
-                        println("User: ${user.displayName}")
-                    }
-                } else {
-                    println("User not updated")
-                }
-            }.await()*/
-            true
         } catch (e: Exception) {
-            // Log the error or handle it appropriately
-            println("Sign in failed: ${e.message}")
-            false
+            println("Sign in failed: ${e.message}") // ✅ Log the error properly
+            false // ✅ Return false on failure
         }
     }
+
 
     override suspend fun signInWithGoogle(activity: Activity): Boolean {
         try {
@@ -126,12 +119,6 @@ class AuthRepositoryImpl @Inject constructor(
                     println("User not created")
                 }
             }.await()
-            /*val user = firebaseAuth.currentUser
-            if (user != null) {
-                dataStoreManager.saveUserName(user.displayName!!)
-                dataStoreManager.saveUserEmail(user.email!!)
-                dataStoreManager.saveUserPhotoUrl(user.photoUrl.toString())
-            }*/
             signOut()
             Result.success("User created successfully")
         } catch (e: Exception) {
