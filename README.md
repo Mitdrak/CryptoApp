@@ -62,6 +62,8 @@ The app uses the **WhiteBit WebSocket API** for real-time cryptocurrency price u
 ## 📷 Screenshots
 
 (Include some images of your app screens here)
+![image](https://github.com/user-attachments/assets/a16e550c-6b45-4505-a59b-660726b01815)
+![image](https://github.com/user-attachments/assets/3e5d8126-5b77-4624-b43a-85defabe8074)
 
 ---
 
